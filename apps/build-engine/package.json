@@ -8,5 +8,9 @@
   "main": "script.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.1071.0",
+    "mime-types": "^3.0.2"
   }
 }
