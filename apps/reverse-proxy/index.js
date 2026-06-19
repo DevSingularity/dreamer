@@ -11,6 +11,7 @@ const proxy = httpProxy.createProxy()
 // CURRENT: projectSlug -> subdomain -> s3 bucket path
 // FUTURE TODO: projectSlug -> subdomain -> deployment record in DB -> latest deploymentId -> s3 bucket path
 app.use((req, res) => {
+    console.log(req.hostname)
     const hostname = req.hostname // e.g. "myapp.singularitydev.xyz"
     const subdomain = hostname.split('.')[0] // "myapp"
     // TODO: replace with real DB lookup mapping subdomain -> deployment/project slug
