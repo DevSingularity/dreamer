@@ -15,8 +15,10 @@ import { env } from './env';
 // gitignored, on purpose — it's fine where it lives now: an env var).
 const adapter = new PrismaPg({
   connectionString: env.DATABASE_URL,
-  // ssl: { ca: env.DATABASE_CA_CERT, rejectUnauthorized: true },
-  ssl: { rejectUnauthorized: false } 
+  ...(env.NODE_ENV === 'production'
+    ? { ssl: { rejectUnauthorized: false } }
+    : { ssl: { ca: env.DATABASE_CA_CERT, rejectUnauthorized: true } }
+  )
 });
 
 export const prisma = new PrismaClient({
