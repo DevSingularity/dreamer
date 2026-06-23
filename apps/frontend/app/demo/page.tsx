@@ -39,7 +39,7 @@ export default function Demo() {
 
   const submit = async () => {
     setLoading(true);
-    await fetch("http://localhost:3000/project", {
+    await fetch("http://localhost:8000/api/deploy", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ gitUrl, slug: slug || undefined }),
