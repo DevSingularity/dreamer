@@ -33,3 +33,22 @@ export function repoNameFromUrl(repoUrl: string): string {
   const match = repoUrl.match(/\/([^/]+?)(\.git)?\/?$/);
   return match?.[1] ?? "";
 }
+
+/**
+ * Mirrors `slugifyProjectName` in the API's src/projects/project.service.ts
+ * — same lowercase / collapse-non-alphanumeric / trim-hyphens rules — purely
+ * so the new-project form can preview what the real slug will look like
+ * before submitting. This is a PREVIEW ONLY: it can't know about collisions
+ * (no DB access from the browser), so if the exact slug is already taken,
+ * the actual created project gets `{preview}-{randomSuffix}` instead — the
+ * form's helper text next to this says as much, deliberately, rather than
+ * implying the preview is guaranteed.
+ */
+export function slugPreview(name: string): string {
+  const slug = name
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+  return slug || "project";
+}

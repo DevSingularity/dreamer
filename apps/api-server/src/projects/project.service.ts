@@ -1,4 +1,4 @@
-import { generateSlug } from 'random-word-slugs';
+import { randomBytes } from 'crypto';
 import { prisma } from '../lib/prisma';
 import { audit, type AuditMeta } from '../lib/audit';
 import { ConflictError, NotFoundError } from '../lib/errors';
@@ -11,7 +11,15 @@ import type {
 } from './project.types';
 import type { Project } from '../generated/prisma/client';
 
+const MAX_SLUG_LENGTH = 63; // Project.slug is @db.VarChar(63) — a DNS label limit
+const SLUG_SUFFIX_LENGTH = 6; // "-a1b2c3" — short enough to stay readable, long enough that two retries colliding is effectively impossible
 const SLUG_MAX_ATTEMPTS = 5;
+
+// A handful of subdomains/paths that would be confusing or actively
+// dangerous for a user to claim as their own project's identifier — checked
+// the same way a taken slug is, so a user who names their project "API"
+// silently gets "api-a1b2c3" instead of a 500 or, worse, actually claiming it.
+const RESERVED_SLUGS = new Set(['www', 'api', 'app', 'admin', 'dashboard', 'staging', 'static']);
 
 /**
  * Matches https://github.com/owner/repo(.git) and git@github.com:owner/repo.git.
@@ -44,17 +52,73 @@ function toPublicProject(project: Project): PublicProject {
 }
 
 /**
- * Project.slug is `@unique @db.VarChar(63)` (a DNS label). Collisions from
- * random-word-slugs are rare but not impossible — retrying a handful of
- * times here means a collision is invisible to the user, instead of
- * surfacing as a raw Prisma P2002 error from a 500.
+ * "My Vite App" -> "my-vite-app". Lowercase, non-alphanumeric runs collapsed
+ * to a single hyphen, leading/trailing hyphens trimmed, hard-capped at the
+ * DNS label limit. Falls back to a fixed string for the edge case where the
+ * name has no ASCII alphanumeric characters at all (e.g. a name that's
+ * entirely emoji or non-Latin script) — the random-suffix fallback below
+ * still makes that project's slug unique, it just won't be "named" by this
+ * function alone.
  */
-async function generateUniqueProjectSlug(): Promise<string> {
+function slugifyProjectName(name: string): string {
+  const slug = name
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, MAX_SLUG_LENGTH)
+    .replace(/-+$/g, ''); // re-trim in case the length cap landed mid-hyphen
+
+  return slug || 'project';
+}
+
+function randomSlugSuffix(): string {
+  // crypto.randomBytes, not Math.random() — not because this needs to be
+  // cryptographically unguessable (it's a disambiguation suffix, not a
+  // secret), but because Node's CSPRNG is already imported by lib/crypto.ts
+  // elsewhere in this codebase and there's no reason to reach for a weaker
+  // generator just because the stakes here happen to be lower.
+  return randomBytes(Math.ceil(SLUG_SUFFIX_LENGTH / 2))
+    .toString('hex')
+    .slice(0, SLUG_SUFFIX_LENGTH);
+}
+
+async function isSlugAvailable(slug: string): Promise<boolean> {
+  if (RESERVED_SLUGS.has(slug)) return false;
+  const existing = await prisma.project.findUnique({ where: { slug } });
+  return !existing;
+}
+
+/**
+ * The project's slug IS its name, slugified — not a random string unrelated
+ * to what the user actually called their project. This is what shows up on
+ * the dashboard card under the project name (§2.3 of the frontend guide) and
+ * it should read as "the project's identifier," not "a dice roll." A random
+ * suffix only ever appears as a fallback, and only on the exact name that
+ * collided — so the common case (a project name nobody else has used yet)
+ * gets a clean slug, and collisions degrade gracefully instead of erroring.
+ *
+ * This is deliberately scoped to PROJECT slugs only. Deployment.slug (see
+ * deployment.service.ts) stays on random-word-slugs unchanged — a
+ * deployment isn't named by the user, and Deployment.slug is what actually
+ * becomes the live subdomain, where "memorable" matters far less than "the
+ * project's slug is what a human looks at on the dashboard."
+ */
+async function generateUniqueProjectSlug(name: string): Promise<string> {
+  const base = slugifyProjectName(name);
+
+  if (await isSlugAvailable(base)) return base;
+
+  // Collision (or a reserved word) — fall back to `base-xxxxxx`. Truncate
+  // the base first so the suffixed candidate still fits inside
+  // MAX_SLUG_LENGTH even when `base` was already near the limit on its own.
+  const truncatedBase = base.slice(0, MAX_SLUG_LENGTH - (SLUG_SUFFIX_LENGTH + 1));
+
   for (let attempt = 0; attempt < SLUG_MAX_ATTEMPTS; attempt++) {
-    const candidate = generateSlug();
-    const existing = await prisma.project.findUnique({ where: { slug: candidate } });
-    if (!existing) return candidate;
+    const candidate = `${truncatedBase}-${randomSlugSuffix()}`;
+    if (await isSlugAvailable(candidate)) return candidate;
   }
+
   throw new ConflictError(
     'Could not generate a unique project slug — please try again',
     'SLUG_GENERATION_FAILED'
@@ -66,7 +130,7 @@ export async function createProject(
   input: CreateProjectInput,
   meta: AuditMeta
 ): Promise<PublicProject> {
-  const slug = await generateUniqueProjectSlug();
+  const slug = await generateUniqueProjectSlug(input.name);
 
   const project = await prisma.project.create({
     data: {

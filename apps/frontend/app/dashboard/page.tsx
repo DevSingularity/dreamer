@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { listProjects } from "../../lib/dashboard-api";
-import type { ProjectWithLatestDeployment } from "../../lib/dashboard-types";
-import { ProjectCard } from "../../components/dashboard/ProjectCard";
-import { EmptyProjectsState } from "../../components/dashboard/EmptyState";
+import { listProjects } from "@/lib/dashboard-api";
+import type { ProjectWithLatestDeployment } from "@/lib/dashboard-types";
+import { ProjectCard } from "@/components/dashboard/ProjectCard";
+import { EmptyProjectsState } from "@/components/dashboard/EmptyState";
 
 export default function DashboardPage() {
   const [projects, setProjects] = useState<ProjectWithLatestDeployment[] | null>(null);

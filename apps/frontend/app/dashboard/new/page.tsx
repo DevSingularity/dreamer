@@ -3,8 +3,10 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowRight, Loader2 } from "lucide-react";
-import { createDeployment, createProject } from "../../../lib/dashboard-api";
-import { repoNameFromUrl } from "../../../lib/format";
+import { GithubIcon as Github } from "@/components/icons"
+import { createDeployment, createProject } from "@/lib/dashboard-api";
+import { repoNameFromUrl, slugPreview } from "@/lib/format";
+import { API_BASE_URL } from "@/lib/config";
 
 export default function NewProjectPage() {
   const router = useRouter();
@@ -13,7 +15,9 @@ export default function NewProjectPage() {
   const [nameTouched, setNameTouched] = useState(false);
   const [defaultBranch, setDefaultBranch] = useState("main");
   const [description, setDescription] = useState("");
+  const [isPrivate, setIsPrivate] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [needsGithubConnect, setNeedsGithubConnect] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   function handleRepoUrlChange(value: string) {
@@ -27,6 +31,7 @@ export default function NewProjectPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+    setNeedsGithubConnect(false);
     setSubmitting(true);
 
     try {
@@ -35,11 +40,24 @@ export default function NewProjectPage() {
         repoUrl,
         defaultBranch,
         description: description || undefined,
+        isPrivate,
       });
       const deployment = await createDeployment(project.id);
       router.push(`/dashboard/projects/${project.id}/deployments/${deployment.id}`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+      // GITHUB_NOT_CONNECTED isn't really an "error to read," it's a missing
+      // step — surfacing it as a direct fix (a link, not just red text) is
+      // worth special-casing this one code rather than treating it like any
+      // other failed request. apiFetch's thrown Error only ever carries
+      // `message`, not the original `code`, so this matches on the message
+      // text the backend sends for that specific case (deployment.service.ts
+      // §3.7) — slightly stringly-typed, but it's one string in one place.
+      const message = err instanceof Error ? err.message : "Something went wrong. Please try again.";
+      if (message.includes("Connect your GitHub account")) {
+        setNeedsGithubConnect(true);
+      } else {
+        setError(message);
+      }
       setSubmitting(false);
     }
   }
@@ -79,6 +97,11 @@ export default function NewProjectPage() {
             }}
             className="w-full px-3 py-2.5 rounded-lg bg-zinc-900 border border-zinc-800 text-white text-sm focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition-colors"
           />
+          {name && (
+            <p className="text-xs text-zinc-500 mt-1.5 font-mono">
+              {slugPreview(name)} <span className="text-zinc-600">— exact match if available, otherwise +random suffix</span>
+            </p>
+          )}
         </div>
 
         <div>
@@ -105,6 +128,35 @@ export default function NewProjectPage() {
             className="w-full px-3 py-2.5 rounded-lg bg-zinc-900 border border-zinc-800 text-white text-sm placeholder:text-zinc-500 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition-colors resize-none"
           />
         </div>
+
+        <label className="flex items-center gap-2.5 cursor-pointer select-none">
+          <input
+            type="checkbox"
+            checked={isPrivate}
+            onChange={(e) => setIsPrivate(e.target.checked)}
+            className="w-4 h-4 rounded border-zinc-700 bg-zinc-900 text-blue-500 focus:ring-blue-500/50 focus:ring-offset-0"
+          />
+          <span className="text-sm text-zinc-300">This is a private repository</span>
+        </label>
+
+        {needsGithubConnect && (
+          <div className="flex items-center justify-between gap-3 text-sm bg-amber-500/10 border border-amber-500/20 rounded-lg px-3 py-2.5">
+            <span className="text-amber-200">Connect your GitHub account to deploy private repositories.</span>
+            {/* Full page navigation, not apiFetch — this is the existing
+                redirect-based OAuth flow (auth/auth.routes.ts's GET
+                /api/auth/github), the same button login/page.tsx already
+                uses. Re-running it also transparently upgrades an
+                already-connected account to the wider `repo` scope from
+                backend guide §3.7, if it was connected before that change. */}
+            <a
+              href={`${API_BASE_URL}/auth/github`}
+              className="shrink-0 flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-zinc-100 text-zinc-900 text-xs font-medium hover:bg-white transition-colors"
+            >
+              <Github className="w-3.5 h-3.5" />
+              Connect GitHub
+            </a>
+          </div>
+        )}
 
         {error && (
           <p className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2">{error}</p>

@@ -28,6 +28,7 @@ export interface CreateProjectInput {
   repoUrl: string;
   defaultBranch?: string;
   description?: string;
+  isPrivate?: boolean;
 }
 
 export async function createProject(input: CreateProjectInput): Promise<Project> {
