@@ -43,7 +43,7 @@ export default function NewProjectPage() {
         isPrivate,
       });
       const deployment = await createDeployment(project.id);
-      router.push(`/dashboard/projects/${project.id}/deployments/${deployment.id}`);
+      router.push(`/project/${project.id}/deployments/${deployment.id}`);
     } catch (err) {
       // GITHUB_NOT_CONNECTED isn't really an "error to read," it's a missing
       // step — surfacing it as a direct fix (a link, not just red text) is

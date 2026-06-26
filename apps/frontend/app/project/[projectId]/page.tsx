@@ -1,53 +1,36 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
-import { ExternalLink, GitBranch, Loader2, Rocket, Trash2 } from "lucide-react";
-import { createDeployment, deleteProject, getProject, listDeployments } from "@/lib/dashboard-api";
-import type { Deployment, Project } from "@/lib/dashboard-types";
+import { useRouter } from "next/navigation";
+import { GitBranch, Rocket } from "lucide-react";
+import { createDeployment, listDeployments } from "@/lib/dashboard-api";
+import type { Deployment } from "@/lib/dashboard-types";
+import { useProject } from "@/lib/project-context";
 import { DeploymentRow } from "@/components/dashboard/DeploymentRow";
 import { StatusBadge } from "@/components/dashboard/StatusBadge";
 
 export default function ProjectOverviewPage() {
-  const { projectId } = useParams<{ projectId: string }>();
+  const { project } = useProject();
   const router = useRouter();
 
-  const [project, setProject] = useState<Project | null>(null);
   const [deployments, setDeployments] = useState<Deployment[] | null>(null);
   const [deploying, setDeploying] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [confirmingDelete, setConfirmingDelete] = useState(false);
-  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
-    Promise.all([getProject(projectId), listDeployments(projectId, { limit: 10 })])
-      .then(([projectData, { deployments }]) => {
-        setProject(projectData);
-        setDeployments(deployments);
-      })
-      .catch((err) => setError(err instanceof Error ? err.message : "Failed to load project"));
-  }, [projectId]);
+    listDeployments(project.id, { limit: 10 })
+      .then(({ deployments }) => setDeployments(deployments))
+      .catch((err) => setError(err instanceof Error ? err.message : "Failed to load deployments"));
+  }, [project.id]);
 
   async function handleDeploy() {
     setDeploying(true);
     try {
-      const deployment = await createDeployment(projectId);
-      router.push(`/dashboard/projects/${projectId}/deployments/${deployment.id}`);
+      const deployment = await createDeployment(project.id);
+      router.push(`/project/${project.id}/deployments/${deployment.id}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to start deployment");
       setDeploying(false);
-    }
-  }
-
-  async function handleDelete() {
-    setDeleting(true);
-    try {
-      await deleteProject(projectId);
-      router.push("/dashboard");
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to delete project");
-      setDeleting(false);
-      setConfirmingDelete(false);
     }
   }
 
@@ -55,7 +38,7 @@ export default function ProjectOverviewPage() {
     return <p className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-3">{error}</p>;
   }
 
-  if (!project || !deployments) {
+  if (!deployments) {
     return <div className="h-64 rounded-2xl border border-zinc-800 bg-zinc-950/40 animate-pulse" />;
   }
 
@@ -63,8 +46,7 @@ export default function ProjectOverviewPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-1">
-        <h1 className="text-2xl font-bold">{project.name}</h1>
+      <div className="flex items-center justify-end mb-4">
         <button
           onClick={handleDeploy}
           disabled={deploying}
@@ -74,15 +56,6 @@ export default function ProjectOverviewPage() {
           {deploying ? "Queuing..." : "Redeploy"}
         </button>
       </div>
-      <a
-        href={project.repoUrl}
-        target="_blank"
-        rel="noreferrer"
-        className="flex items-center gap-1.5 text-sm text-zinc-500 hover:text-zinc-300 mb-8 font-mono"
-      >
-        {project.repoFullName ?? project.repoUrl}
-        <ExternalLink className="w-3 h-3" />
-      </a>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
@@ -145,40 +118,6 @@ export default function ProjectOverviewPage() {
                 <dd className="text-zinc-300">{deployments.length}</dd>
               </div>
             </dl>
-          </div>
-
-          <div className="bg-red-500/5 rounded-2xl border border-red-500/20 p-5">
-            <h2 className="text-sm font-semibold text-red-400 uppercase tracking-wider mb-2">Danger Zone</h2>
-            <p className="text-xs text-zinc-500 mb-3">
-              Deletes the project and takes down its live deployment. This can&apos;t be undone.
-            </p>
-            {!confirmingDelete ? (
-              <button
-                onClick={() => setConfirmingDelete(true)}
-                className="flex items-center gap-1.5 text-sm text-red-400 hover:text-red-300 font-medium"
-              >
-                <Trash2 className="w-3.5 h-3.5" />
-                Delete Project
-              </button>
-            ) : (
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={handleDelete}
-                  disabled={deleting}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-500/90 hover:bg-red-500 text-white text-sm font-medium transition-colors disabled:opacity-60"
-                >
-                  {deleting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
-                  {deleting ? "Deleting..." : `Confirm delete "${project.name}"`}
-                </button>
-                <button
-                  onClick={() => setConfirmingDelete(false)}
-                  disabled={deleting}
-                  className="text-sm text-zinc-400 hover:text-zinc-200"
-                >
-                  Cancel
-                </button>
-              </div>
-            )}
           </div>
         </div>
       </div>

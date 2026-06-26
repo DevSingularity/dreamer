@@ -24,7 +24,7 @@ export function ProjectCard({ project }: { project: ProjectWithLatestDeployment 
     setDeploying(true);
     try {
       const deployment = await createDeployment(project.id);
-      router.push(`/dashboard/projects/${project.id}/deployments/${deployment.id}`);
+      router.push(`/project/${project.id}/deployments/${deployment.id}`);
     } catch {
       setDeploying(false);
     }
@@ -32,7 +32,7 @@ export function ProjectCard({ project }: { project: ProjectWithLatestDeployment 
 
   return (
     <div
-      onClick={() => router.push(`/dashboard/projects/${project.id}`)}
+      onClick={() => router.push(`/project/${project.id}`)}
       className="block bg-zinc-950/80 rounded-2xl border border-zinc-800 p-5 hover:border-zinc-700 transition-colors group cursor-pointer"
     >
       <div className="flex items-start justify-between mb-3">
