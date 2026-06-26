@@ -27,8 +27,22 @@ export default function ProjectLayout({ children }: { children: React.ReactNode 
   }, [projectId]);
 
   useEffect(() => {
-    loadProject();
-  }, [loadProject]);
+    const controller = new AbortController();
+    (async () => {
+      try {
+        const data = await getProject(projectId);
+        if (!controller.signal.aborted) {
+          setProject(data);
+          setError(null);
+        }
+      } catch (err) {
+        if (!controller.signal.aborted) {
+          setError(err instanceof Error ? err.message : "Failed to load project");
+        }
+      }
+    })();
+    return () => controller.abort();
+  }, [projectId]);
 
   return (
     <RequireAuth>

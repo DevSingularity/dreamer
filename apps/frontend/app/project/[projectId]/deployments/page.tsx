@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { listDeployments } from "@/lib/dashboard-api";
 import type { Deployment } from "@/lib/dashboard-types";
@@ -20,8 +20,9 @@ export default function DeploymentsListPage() {
   const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState<DeploymentFilters>(EMPTY_FILTERS);
 
-  const loadFirstPage = useCallback(() => {
-    setLoading(true);
+  useEffect(() => {
+    const controller = new AbortController();
+    setLoading(true); // eslint-disable-line react-hooks/set-state-in-effect -- must reset before async
     setError(null);
     listDeployments(project.id, {
       limit: 20,
@@ -32,14 +33,19 @@ export default function DeploymentsListPage() {
       dateTo: filters.dateTo || undefined,
     })
       .then(({ deployments, nextCursor }) => {
-        setDeployments(deployments);
-        setNextCursor(nextCursor);
+        if (!controller.signal.aborted) {
+          setDeployments(deployments);
+          setNextCursor(nextCursor);
+        }
       })
-      .catch((err) => setError(err instanceof Error ? err.message : "Failed to load deployments"))
-      .finally(() => setLoading(false));
+      .catch((err) => {
+        if (!controller.signal.aborted) setError(err instanceof Error ? err.message : "Failed to load deployments");
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setLoading(false);
+      });
+    return () => controller.abort();
   }, [project.id, filters]);
-
-  useEffect(loadFirstPage, [loadFirstPage]);
 
   async function handleLoadMore() {
     if (!nextCursor) return;
