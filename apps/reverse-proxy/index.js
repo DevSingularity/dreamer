@@ -2,7 +2,7 @@ const express = require('express')
 const httpProxy = require('http-proxy')
 const app = express()
 
-const PORT = process.env.PORT || 8000
+const PORT = process.env.PORT || 9000
 const BASE_PATH = 'https://dreamer-outputs.s3.ap-south-1.amazonaws.com/__outputs'
 const BASE_DOMAIN = process.env.BASE_DOMAIN || 'singularitydev.xyz'
 

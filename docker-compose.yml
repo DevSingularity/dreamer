@@ -1,0 +1,90 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-dreamer}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-dreamer}
+      POSTGRES_DB: ${POSTGRES_DB:-dreamer}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-dreamer}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api-server:
+    build:
+      context: ./apps/api-server
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./apps/api-server/.env
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-dreamer}:${POSTGRES_PASSWORD:-dreamer}@postgres:5432/${POSTGRES_DB:-dreamer}
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./apps/frontend
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL:-http://localhost:8000}
+        NEXT_PUBLIC_SOCKET_URL: ${NEXT_PUBLIC_SOCKET_URL:-http://localhost:9002}
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL:-http://localhost:8000}
+      NEXT_PUBLIC_SOCKET_URL: ${NEXT_PUBLIC_SOCKET_URL:-http://localhost:9002}
+
+  reverse-proxy:
+    build:
+      context: ./apps/reverse-proxy
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "9000:9000"
+    env_file:
+      - ./apps/reverse-proxy/.env
+
+  build-engine:
+    build:
+      context: ./apps/build-engine
+      dockerfile: Dockerfile
+    profiles:
+      - task
+    env_file:
+      - ./apps/build-engine/.env
+    environment:
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      redis:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+  redis_data:
