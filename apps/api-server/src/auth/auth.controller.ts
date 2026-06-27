@@ -20,23 +20,34 @@ function sessionMeta(req: Request): SessionMeta {
   return { ipAddress: req.ip, userAgent: req.headers['user-agent'] };
 }
 
+// Derive cross-origin from FRONTEND_URL rather than NODE_ENV so the cookie
+// settings are correct even if NODE_ENV isn't set to 'production' on the host.
+// On localhost the frontend and API share a site (SameSite=Lax works); on
+// different domains (e.g. Vercel + Render) we need SameSite=None + Secure.
+function isSecureContext(): boolean {
+  const hostname = new URL(env.FRONTEND_URL).hostname;
+  return hostname !== 'localhost' && hostname !== '127.0.0.1';
+}
+
+const COOKIE_SAME_SITE = () => isSecureContext() ? 'none' as const : 'lax' as const;
+const COOKIE_SECURE   = () => isSecureContext();
+
 function setRefreshCookie(res: Response, token: string) {
   res.cookie(REFRESH_COOKIE_NAME, token, {
     httpOnly: true,
-    secure: env.NODE_ENV === 'production',
-    // 'strict' is safe here because the frontend and API are assumed to share
-    // a parent domain (e.g. app.yourdomain.com / api.yourdomain.com) — SameSite
-    // is scoped to the registrable domain, not the exact origin. If you ever
-    // deploy them on two unrelated domains, switch to 'none' + secure: true.
-    // sameSite: 'strict',
-    sameSite: env.NODE_ENV === 'production' ? 'none' : 'lax',
+    secure: COOKIE_SECURE(),
+    sameSite: COOKIE_SAME_SITE(),
     path: REFRESH_COOKIE_PATH,
     maxAge: env.REFRESH_TOKEN_TTL_DAYS * 24 * 60 * 60 * 1000,
   });
 }
 
 function clearRefreshCookie(res: Response) {
-  res.clearCookie(REFRESH_COOKIE_NAME, { path: REFRESH_COOKIE_PATH });
+  res.clearCookie(REFRESH_COOKIE_NAME, {
+    path: REFRESH_COOKIE_PATH,
+    secure: COOKIE_SECURE(),
+    sameSite: COOKIE_SAME_SITE(),
+  });
 }
 
 // Email + password
