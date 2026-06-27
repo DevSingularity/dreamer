@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Loader2 } from "lucide-react";
 import * as authApi from "@/lib/auth";
+import { Button } from "@/components/ui/Button";
 import type { AuthSession } from "@/lib/auth";
 import { SessionRow } from "@/components/dashboard/SessionRow";
 
@@ -103,14 +103,9 @@ export default function AccountPage() {
 
         <div className="flex items-center justify-between gap-3">
           <p className="text-xs text-zinc-600">Changing your password signs out every other device.</p>
-          <button
-            type="submit"
-            disabled={savingPassword}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-sm font-medium shadow-lg shadow-blue-500/20 transition-all disabled:opacity-60 shrink-0"
-          >
-            {savingPassword && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+          <Button variant="primary" type="submit" loading={savingPassword} className="shrink-0">
             {savingPassword ? "Saving..." : passwordSaved ? "Saved" : "Change Password"}
-          </button>
+          </Button>
         </div>
       </form>
 

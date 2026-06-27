@@ -2,21 +2,17 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { deleteProject, updateProject } from "@/lib/dashboard-api";
+import { Button } from "@/components/ui/Button";
 import { useProject } from "@/lib/project-context";
 import { ConfirmModal } from "@/components/dashboard/ConfirmModal";
 
 function SaveButton({ saving, saved }: { saving: boolean; saved: boolean }) {
   return (
-    <button
-      type="submit"
-      disabled={saving}
-      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-sm font-medium shadow-lg shadow-blue-500/20 transition-all disabled:opacity-60"
-    >
-      {saving && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+    <Button variant="primary" type="submit" loading={saving}>
       {saving ? "Saving..." : saved ? "Saved" : "Save"}
-    </button>
+    </Button>
   );
 }
 

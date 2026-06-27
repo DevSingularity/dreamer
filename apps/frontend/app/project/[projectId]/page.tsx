@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { GitBranch, Rocket } from "lucide-react";
 import { createDeployment, listDeployments } from "@/lib/dashboard-api";
+import { Button } from "@/components/ui/Button";
 import type { Deployment } from "@/lib/dashboard-types";
 import { useProject } from "@/lib/project-context";
 import { DeploymentRow } from "@/components/dashboard/DeploymentRow";
@@ -47,14 +48,10 @@ export default function ProjectOverviewPage() {
   return (
     <div>
       <div className="flex items-center justify-end mb-4">
-        <button
-          onClick={handleDeploy}
-          disabled={deploying}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-sm font-medium shadow-lg shadow-blue-500/20 transition-all disabled:opacity-60"
-        >
+        <Button variant="primary" onClick={handleDeploy} loading={deploying}>
           <Rocket className="w-3.5 h-3.5" />
           {deploying ? "Queuing..." : "Redeploy"}
-        </button>
+        </Button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

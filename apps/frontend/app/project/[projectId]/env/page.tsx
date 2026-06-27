@@ -5,6 +5,7 @@ import { Plus } from "lucide-react";
 import { createEnvVariable, deleteEnvVariable, listEnvVariables, updateEnvVariable } from "@/lib/dashboard-api";
 import type { EnvironmentTarget, EnvVariable } from "@/lib/dashboard-types";
 import { useProject } from "@/lib/project-context";
+import { Button } from "@/components/ui/Button";
 import { EnvVariableForm, type EnvVariableFormValues } from "@/components/dashboard/EnvVariableForm";
 import { EnvVariableRow } from "@/components/dashboard/EnvVariableRow";
 
@@ -81,13 +82,10 @@ export default function EnvVariablesPage() {
         </div>
 
         {formMode === "none" && (
-          <button
-            onClick={() => setFormMode("create")}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-sm font-medium shadow-lg shadow-blue-500/20 transition-all"
-          >
+          <Button variant="primary" onClick={() => setFormMode("create")}>
             <Plus className="w-4 h-4" />
             Add Variable
-          </button>
+          </Button>
         )}
       </div>
 

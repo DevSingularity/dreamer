@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Loader2 } from "lucide-react";
 import type { EnvironmentTarget, EnvVariable } from "@/lib/dashboard-types";
+import { Button } from "../ui/Button";
 
 const ALL_ENVIRONMENTS: EnvironmentTarget[] = ["PRODUCTION", "PREVIEW", "DEVELOPMENT"];
 
@@ -133,14 +133,9 @@ export function EnvVariableForm({
         >
           Cancel
         </button>
-        <button
-          type="submit"
-          disabled={submitting}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-sm font-medium shadow-lg shadow-blue-500/20 transition-all disabled:opacity-60"
-        >
-          {submitting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+        <Button variant="primary" type="submit" loading={submitting}>
           {isEditing ? "Save changes" : "Add variable"}
-        </button>
+        </Button>
       </div>
     </form>
   );
