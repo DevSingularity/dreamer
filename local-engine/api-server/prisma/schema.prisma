@@ -367,7 +367,6 @@ model Deployment {
   @@index([projectId, createdAt(sort: Desc)])   // "deployments for this project" query
   @@index([status])                              // idle detector: WHERE status = 'RUNNING' AND type = 'DYNAMIC'
   @@index([slug])
-  @@index([ecsServiceArn])                       // reverse lookup for ECS event bridge events
 }
 
 
