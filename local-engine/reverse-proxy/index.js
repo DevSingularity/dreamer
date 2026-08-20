@@ -22,8 +22,8 @@ app.set('trust proxy', 1)
 // ones with no project behind them at all — the literal `// TODO: replace
 // with real DB lookup` this used to carry) with a real lookup, and adds
 // the DYNAMIC branch STATIC-only reverse-proxy never needed: for a
-// DYNAMIC deployment, this app has no S3 output to proxy to at all — it
-// proxies to the deployment's own Lambda Function URL instead.
+// DYNAMIC deployment, this app has no static output to proxy to at all — it
+// proxies to the deployment's own app container instead.
 app.use(async (req, res) => {
     const hostname = req.hostname // "myapp.singularitydev.xyz" OR a custom domain like "polyglot.com"
 
@@ -62,35 +62,33 @@ app.use(async (req, res) => {
     })
 
     if (route.type === 'DYNAMIC') {
-        if (!route.lambdaFunctionUrl) {
+        if (!route.appUrl) {
             // Shouldn't happen for a RUNNING dynamic deployment — RUNNING is
             // only ever set (see handleImageReady in deployment.service.ts)
-            // AFTER lambdaFunctionUrl is persisted — but defends against a
+            // AFTER appUrl is persisted — but defends against a
             // half-migrated row rather than proxying to `undefined`.
-            res.status(502).send('Deployment is misconfigured (no Lambda Function URL)')
+            res.status(502).send('Deployment is misconfigured (no app container URL)')
             return
         }
 
         req.dreamerRouteType = 'DYNAMIC'
-        // changeOrigin: true is REQUIRED here, unlike the STATIC branch's
-        // historical reasoning — each deployment's Function URL is its own
-        // unique hostname (xxxx.lambda-url.{region}.on.aws), not a
-        // shared host-header-routed front door, so the outbound Host
-        // header must be rewritten to match it, or AWS's own edge
-        // rejects the request before it ever reaches the function.
-        proxy.web(req, res, { target: route.lambdaFunctionUrl, changeOrigin: true })
+        // changeOrigin: true rewrites the outbound Host header to match
+        // the target — harmless here (the app container doesn't care what
+        // Host header it sees), but left on for consistency with how this
+        // was always set for the DYNAMIC branch.
+        proxy.web(req, res, { target: route.appUrl, changeOrigin: true })
         return
     }
 
     // STATIC (unchanged behavior, now driven by a confirmed DB row instead
-    // of a blind guess): proxy to this project's S3 output prefix.
+    // of a blind guess): proxy to this project's MinIO output prefix.
     //
     // CHANGED — uses route.slug (now selected by resolveRoute) instead of
     // the removed `subdomain` variable. That derivation only ever worked
     // because a subdomain request's hostname label happened to equal the
     // project slug; a custom domain's hostname (e.g. "polyglot.com") has
     // no such relationship to the project at all — route.slug is the only
-    // correct source for this S3-prefix interpolation now, regardless of
+    // correct source for this output-prefix interpolation now, regardless of
     // which hostname shape the request came in as.
     req.dreamerRouteType = 'STATIC'
     const resolvesTo = `${BASE_PATH}/${route.slug}`
@@ -104,7 +102,7 @@ proxy.on('proxyReq', (proxyReq, req, _res) => {
     // req.dreamerRouteType set above) because doing this to a DYNAMIC
     // request would corrupt the path Next.js's own router needs to see
     // unchanged — appending "index.html" to "/" before it reaches a
-    // Lambda-hosted Next.js server breaks its routing outright.
+    // containerized Next.js server breaks its routing outright.
     if (req.dreamerRouteType === 'STATIC' && req.url === '/') {
         proxyReq.path += 'index.html'
     }

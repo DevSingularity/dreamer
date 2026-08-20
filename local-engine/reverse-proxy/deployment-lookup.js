@@ -146,14 +146,14 @@ async function resolveRoute(hostname, baseDomain) {
     // p.id/d.id (projectId/deploymentId) and p.slug are selected in BOTH
     // branches — the former so index.js can attribute metrics regardless
     // of which hostname shape the request came in as, the latter so the
-    // STATIC branch's S3-prefix interpolation (which has always been
+    // STATIC branch's output-prefix interpolation (which has always been
     // keyed by slug, not hostname — see index.js) works identically for a
     // custom domain, whose hostname has no relationship to the project's
     // slug at all.
     const result = isUnderBaseDomain
         ? await pool.query(
               `SELECT p.id AS "projectId", d.id AS "deploymentId", p.slug AS "slug",
-                      d.type AS "type", d."s3Prefix" AS "s3Prefix", d."lambdaFunctionUrl" AS "lambdaFunctionUrl"
+                      d.type AS "type", d."outputPrefix" AS "outputPrefix", d."appUrl" AS "appUrl"
                FROM "Project" p
                JOIN "Deployment" d ON d.id = p."activeDeploymentId"
                WHERE p.slug = $1 AND p."deletedAt" IS NULL`,
@@ -161,7 +161,7 @@ async function resolveRoute(hostname, baseDomain) {
           )
         : await pool.query(
               `SELECT p.id AS "projectId", d.id AS "deploymentId", p.slug AS "slug",
-                      d.type AS "type", d."s3Prefix" AS "s3Prefix", d."lambdaFunctionUrl" AS "lambdaFunctionUrl"
+                      d.type AS "type", d."outputPrefix" AS "outputPrefix", d."appUrl" AS "appUrl"
                FROM "CustomDomain" cd
                JOIN "Project" p ON p.id = cd."projectId"
                JOIN "Deployment" d ON d.id = p."activeDeploymentId"

@@ -11,6 +11,8 @@
 // `background-clip: text` gradient text — both are common satori footguns
 // that render as a wrong/blank result rather than failing loudly, and this
 // can't be visually spot-checked in this environment before shipping.
+import { SITE_URL } from "@/lib/site";
+
 export function OgCard() {
   return (
     <div
@@ -71,9 +73,9 @@ export function OgCard() {
             fontWeight: 600,
           }}
         >
-          Free Cloud Hosting — Open Source at Heart
+          Self-Hosted — Open Source at Heart
         </div>
-        <div style={{ fontSize: "22px", color: "#71717a" }}>dreamer.samanp.xyz</div>
+        <div style={{ fontSize: "22px", color: "#71717a" }}>{SITE_URL.replace(/^https?:\/\//, "")}</div>
       </div>
     </div>
   );

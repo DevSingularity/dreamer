@@ -85,7 +85,7 @@ bash "${SCRIPT_DIR}/scripts/lib/issue-certificate.sh" "${DOMAIN}" "${EMAIL}" "${
 # the first deploy is attempted, so build it here rather than leaving it
 # as a manual step someone forgets.
 log_step "Building the build-engine image"
-docker build -f "${SCRIPT_DIR}/build-engine/Dockerfile.local" -t dreamer-build-engine:local "${SCRIPT_DIR}/build-engine"
+docker build -t dreamer-build-engine:local "${SCRIPT_DIR}/build-engine"
 
 # --- 5. Build + start the stack -------------------------------------------
 log_step "Building and starting the stack (this can take a few minutes on first run)"

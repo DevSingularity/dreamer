@@ -55,6 +55,7 @@ MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
 S3_BUCKET=dreamer-outputs
 NEXT_PUBLIC_API_BASE_URL=https://api.${DOMAIN}
 NEXT_PUBLIC_SOCKET_URL=https://api.${DOMAIN}
+NEXT_PUBLIC_SITE_URL=https://${DOMAIN}
 BUILD_WORKER_CONCURRENCY=5
 EOF
 )"
@@ -78,7 +79,6 @@ DATABASE_CA_CERT=not-used-in-production-see-lib-prisma-ts
 REDIS_URL=redis://redis:6379
 REDIS_BUILDER_URL=redis://redis-builder:6379
 
-DEPLOYMENT_MODE=docker
 DOCKER_BUILD_ENGINE_IMAGE=dreamer-build-engine:local
 DOCKER_NETWORK=dreamer-local
 

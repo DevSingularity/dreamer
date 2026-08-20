@@ -9,10 +9,20 @@ export type DocEntry = {
 };
 
 export const docsManifest: DocEntry[] = [
-  { slug: "", source: "SELF-HOSTING.md", title: "Self-Hosting Guide", group: "Guides" },
+  { slug: "", source: "README.md", title: "Overview", group: "Getting Started" },
+  { slug: "architecture", source: "architecture/overview.md", title: "Architecture Overview", group: "Getting Started" },
+
+  { slug: "auth", source: "auth/README.md", title: "Authentication", group: "Core Concepts" },
+  { slug: "projects", source: "projects/README.md", title: "Projects & Import Wizard", group: "Core Concepts" },
+  { slug: "framework-detection", source: "framework-detection/README.md", title: "Framework Detection", group: "Core Concepts" },
+  { slug: "deployments", source: "deployments/overview.md", title: "Deployments Overview", group: "Core Concepts" },
+  { slug: "deployments/static", source: "deployments/static-deployments.md", title: "Static Deployments", group: "Core Concepts" },
+  { slug: "deployments/dynamic", source: "deployments/dynamic-deployments.md", title: "Dynamic (SSR) Deployments", group: "Core Concepts" },
+  { slug: "reverse-proxy", source: "reverse-proxy/README.md", title: "Reverse Proxy", group: "Core Concepts" },
+  { slug: "wildcard-domains", source: "reverse-proxy/wildcard-domains.md", title: "Wildcard Domains", group: "Core Concepts" },
 ];
 
-export const docsGroups = ["Guides"] as const;
+export const docsGroups = ["Getting Started", "Core Concepts", "Guides"] as const;
 
 export function getDocBySlug(slug: string): DocEntry | undefined {
   return docsManifest.find((d) => d.slug === slug);

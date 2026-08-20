@@ -334,7 +334,7 @@ export default function LandingPage() {
               <ArrowRight className="w-4 h-4" />
             </MagneticButton>
             <Link
-              href="/docs/self-hosting"
+              href="/docs"
               className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-3.5 bg-white/5 hover:bg-white/10 text-white font-medium rounded-full border border-white/10 hover:border-white/20 transition-all"
             >
               <Server className="w-4 h-4 text-blue-400" />
@@ -430,12 +430,12 @@ export default function LandingPage() {
               <div className="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center mb-6">
                 <Server className="w-6 h-6 text-indigo-400" />
               </div>
-              <h3 className="text-xl font-bold mb-3 group-hover:text-indigo-300 transition-colors">Dual Engine Abstraction</h3>
+              <h3 className="text-xl font-bold mb-3 group-hover:text-indigo-300 transition-colors">Docker-Native Build & Run</h3>
               <p className="text-zinc-400 text-sm leading-relaxed mb-4">
-                Deploy to ECS Fargate for cloud orchestration, or route to local Docker containers and NGINX on bare-metal. The worker interacts with a unified execution interface.
+                Build and run share the same Docker daemon on your own VPS \u2014 no registry, no cloud IAM, no push/pull round-trip. The worker interacts with a unified execution interface.
               </p>
               <span className="text-xs font-mono bg-zinc-900 border border-zinc-800 px-2 py-1 rounded text-zinc-500">
-                DEPLOYMENT_ENVIRONMENT=cloud|bare_metal
+                docker build \u2192 docker run \u2192 health-checked swap
               </span>
             </motion.div>
 
@@ -451,7 +451,7 @@ export default function LandingPage() {
               </div>
               <h3 className="text-xl font-bold mb-3 group-hover:text-blue-300 transition-colors">Real-Time Log Pipeline</h3>
               <p className="text-zinc-400 text-sm leading-relaxed mb-4">
-                Build logs stream in real-time from the ECS build container using Redis Pub/Sub directly to Server-Sent Events (SSE). Concurrently saves to PostgreSQL with sequence numbers for gapless history.
+                Build logs stream in real-time from the build container using Redis Pub/Sub directly to Server-Sent Events (SSE). Concurrently saves to PostgreSQL with sequence numbers for gapless history.
               </p>
               <span className="text-xs font-mono bg-zinc-900 border border-zinc-800 px-2 py-1 rounded text-zinc-500">
                 SSE + Redis Pub/Sub + PG GIN index
@@ -515,7 +515,7 @@ export default function LandingPage() {
               </div>
               <h3 className="text-xl font-bold mb-3 group-hover:text-indigo-300 transition-colors">AES-256-GCM Secure Env Storage</h3>
               <p className="text-zinc-400 text-sm leading-relaxed mb-4">
-                Variables and keys are encrypted using AES-256-GCM with a unique initialization vector (IV) per value. Decrypted dynamically only at container initialization inside Fargate.
+                Variables and keys are encrypted using AES-256-GCM with a unique initialization vector (IV) per value. Decrypted dynamically only at container initialization.
               </p>
               <span className="text-xs font-mono bg-zinc-900 border border-zinc-800 px-2 py-1 rounded text-zinc-500">
                 IV per value + Audit Log
@@ -543,7 +543,7 @@ export default function LandingPage() {
             </h3>
             <p className="text-zinc-500 mt-4 max-w-xl mx-auto">
               Clone the repo and you&apos;re running locally in a few minutes. Architecture,
-              self-hosting, and AWS setup guides live in the docs.
+              deployment internals, and the full setup guide live in the docs.
             </p>
           </motion.div>
 
@@ -597,15 +597,15 @@ pnpm dev`}</code>
               },
               {
                 icon: Database,
-                title: "Self-Hosting Guide",
-                desc: "Run the platform itself \u2014 dashboard, API, reverse proxy \u2014 on a VPS/EC2 box.",
-                href: "/docs/self-hosting"
+                title: "Getting Your Own Instance Running",
+                desc: "One command (install.sh) takes a fresh VPS to a running Dreamer \u2014 Docker, TLS, and everything.",
+                href: "/docs"
               },
               {
                 icon: Cloud,
-                title: "AWS Console Setup",
-                desc: "Provisioning ECS, ECR, and Lambda IAM that deployments need.",
-                href: "/docs/aws-setup"
+                title: "Dynamic (SSR) Deployments",
+                desc: "How a Next.js project goes from git push to a live, health-checked container.",
+                href: "/docs/dynamic-deployments"
               }
             ].map((item) => (
               <motion.a
@@ -662,7 +662,7 @@ pnpm dev`}</code>
             Set up your own platform in under 3 minutes. Free yourself from restrictive plans and high cloud bills.
           </p>
           <MagneticButton
-            href="/docs/self-hosting"
+            href="/docs"
             className="inline-flex items-center gap-2 px-8 py-4 bg-white text-black font-bold rounded-full hover:bg-zinc-200 transition-colors shadow-xl"
           >
             Deploy Your PaaS
