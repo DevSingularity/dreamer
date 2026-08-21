@@ -32,6 +32,9 @@ write_if_absent() {
   fi
   echo "${content}" > "${path}"
   chmod 600 "${path}"
+  if [[ "${EUID}" -eq 0 && -n "${SUDO_USER:-}" ]]; then
+    chown "${SUDO_USER}:$(id -gn "${SUDO_USER}")" "${path}" || true
+  fi
   log_ok "Wrote ${path}"
 }
 

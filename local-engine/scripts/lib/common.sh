@@ -7,6 +7,11 @@
 
 set -euo pipefail
 
+if [[ -n "${_DREAMER_COMMON_SOURCED:-}" ]]; then
+  return 0
+fi
+_DREAMER_COMMON_SOURCED=1
+
 # --- logging -----------------------------------------------------------
 # Colored, prefixed output — install.sh runs a LOT of steps in sequence
 # (OS check, Docker install, secret generation, cert issuance, compose up,
