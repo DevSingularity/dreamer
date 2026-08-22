@@ -12,6 +12,7 @@ FROM base AS runner
 COPY --from=deps /home/app/node_modules ./node_modules
 # COPY --from=deps /home/app/prisma ./prisma
 COPY . .
+RUN apk add --no-cache docker-cli
 RUN npx prisma generate
 
 COPY entrypoint.sh ./
