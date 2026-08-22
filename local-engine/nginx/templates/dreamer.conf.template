@@ -30,7 +30,9 @@ server {
     ssl_certificate_key /etc/letsencrypt/live/${DOMAIN}/privkey.pem;
 
     location / {
-        proxy_pass http://frontend:3000;
+        resolver 127.0.0.11 ipv6=off;
+        set $frontend_upstream frontend:3000;
+        proxy_pass http://$frontend_upstream;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -56,7 +58,9 @@ server {
     ssl_certificate_key /etc/letsencrypt/live/${DOMAIN}/privkey.pem;
 
     location / {
-        proxy_pass http://api-server:8000;
+        resolver 127.0.0.11 ipv6=off;
+        set $api_upstream api-server:8000;
+        proxy_pass http://$api_upstream;
         proxy_http_version 1.1;
         # Required for Socket.IO's WebSocket upgrade under /socket.io/ —
         # harmless no-ops for ordinary REST requests, so one location block
@@ -88,7 +92,9 @@ server {
     ssl_certificate_key /etc/letsencrypt/live/${DOMAIN}/privkey.pem;
 
     location / {
-        proxy_pass http://reverse-proxy:9000;
+        resolver 127.0.0.11 ipv6=off;
+        set $reverse_proxy_upstream reverse-proxy:9000;
+        proxy_pass http://$reverse_proxy_upstream;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
