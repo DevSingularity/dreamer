@@ -26,8 +26,7 @@ type WizardStep =
 /**
  * Builds the same https://github.com/owner/repo URL shape createProject's
  * repoUrl field expects, for display/fallback purposes — the authoritative
- * link to a repo is now installationId + repositoryId (both sent alongside
- * this), not repoUrl parsing.
+ * link to a repo is repositoryId (sent alongside this), not repoUrl parsing.
  */
 function repoUrlFromFullName(fullName: string): string {
   return `https://github.com/${fullName}`;
@@ -64,7 +63,6 @@ function NewProjectWizard() {
       const project = await createProject({
         name: buildConfig.projectName,
         repoUrl: repoUrlFromFullName(repo.fullName),
-        installationId: repo.installationId ?? undefined,
         repositoryId: repo.repositoryId,
         defaultBranch: branch,
         isPrivate: repo.isPrivate,
@@ -106,7 +104,6 @@ function NewProjectWizard() {
     case "pick-root-directory":
       return (
         <RootDirectoryPicker
-          installationId={step.repo.installationId}
           repoFullName={step.repo.fullName}
           branch={step.repo.defaultBranch}
           onCancel={() => setStep({ name: "pick-repo" })}
@@ -119,7 +116,6 @@ function NewProjectWizard() {
     case "configure-build":
       return (
         <BuildConfigForm
-          installationId={step.repo.installationId}
           repoFullName={step.repo.fullName}
           repoName={step.repo.name}
           branch={step.branch}

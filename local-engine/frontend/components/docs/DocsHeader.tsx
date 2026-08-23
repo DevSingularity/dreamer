@@ -50,20 +50,14 @@ export function DocsHeader({ searchIndex }: { searchIndex: DocSearchEntry[] }) {
             <span>Star</span>
           </a>
           <button
-            className="text-sm text-zinc-300 hover:text-white transition-colors px-3 py-1.5"
-            onClick={goToConsole}
-          >
-            Log in
-          </button>
-          <Link
-            href="/register"
             className="relative group overflow-hidden rounded-full p-[1px] focus:outline-none"
+            onClick={goToConsole}
           >
             <span className="absolute inset-0 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full group-hover:opacity-100 transition duration-500" />
             <span className="relative block px-4 py-1.5 bg-black rounded-full text-sm font-medium text-white transition duration-200 group-hover:bg-transparent">
-              Sign up
+              Open dashboard
             </span>
-          </Link>
+          </button>
         </div>
 
         <button className="md:hidden ml-auto text-zinc-400 hover:text-white" onClick={() => setMobileNavOpen(!mobileNavOpen)}>
@@ -89,18 +83,11 @@ export function DocsHeader({ searchIndex }: { searchIndex: DocSearchEntry[] }) {
               <span>Star on GitHub</span>
             </a>
             <button
-              className="w-full py-2.5 rounded-lg border border-white/10 bg-white/5 text-zinc-300"
+              className="w-full py-2.5 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 font-medium text-white shadow-lg shadow-blue-500/20 text-center"
               onClick={goToConsole}
             >
-              Log in
+              Open dashboard
             </button>
-            <Link
-              href="/register"
-              className="w-full py-2.5 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 font-medium text-white shadow-lg shadow-blue-500/20 text-center"
-              onClick={() => setMobileNavOpen(false)}
-            >
-              Sign up
-            </Link>
           </div>
         </div>
       )}

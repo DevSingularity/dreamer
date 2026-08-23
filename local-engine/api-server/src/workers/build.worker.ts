@@ -5,7 +5,7 @@ import { deploymentEngine, type BuildJob } from '../deployments/deployment-engin
 import { prisma } from '../lib/prisma';
 import { publishDeploymentEvent } from '../realtime/publish';
 import { logger, runWithContext } from '../lib/logger';
-import { getInstallationAccessToken } from '../lib/github-app';
+import { getSingleOperatorGitAccessToken } from '../lib/git-credentials';
 
 const CONCURRENCY = Number(process.env.BUILD_WORKER_CONCURRENCY ?? 5);
 
@@ -65,34 +65,20 @@ export function startBuildWorker() {
         // deployment.service.ts's createDeploymentInternal for the other
         // ends of this.
         //
-        // GitHub App migration — this used to decrypt the project owner's
-        // personal OAuth token here. That token has no repo scope anymore
-        // (see auth/github.service.ts). A fresh, short-lived installation
-        // access token is minted instead — scoped to exactly the repos
-        // this installation covers, valid ~1 hour (comfortably longer than
-        // any single build), and independent of whether the owner happens
-        // to be logged in right now.
+        // local-engine — see docs/architecture/local-engine-auth-and-networking.md
+        // Decision 2. No installation-token minting anymore: the operator's
+        // single PAT is decrypted straight from the DB. No expiry to race
+        // against, no "suspended between enqueue and dequeue" case — a PAT
+        // doesn't get revoked out from under a running job the way a GitHub
+        // App installation could.
         let gitAccessToken: string | undefined;
         if (job.data.isPrivate) {
-          if (job.data.installationId) {
-            try {
-              gitAccessToken = await getInstallationAccessToken(job.data.installationId);
-            } catch (err) {
-              // Installation was suspended or removed between enqueue time
-              // (createDeploymentInternal checked it existed) and this job
-              // being picked up. Don't silently build a private repo with
-              // no credentials; let it fail loudly the same way a launch
-              // error does elsewhere in this file.
-              logger.error('Failed to mint a GitHub App installation access token', {
-                deploymentId: job.data.deploymentId,
-                installationId: job.data.installationId,
-                err,
-              });
-              throw err;
-            }
-          } else {
-            logger.error('Private repo build has no linked GitHub App installation', { deploymentId: job.data.deploymentId });
-            throw new Error('Private repo build has no linked GitHub App installation');
+          gitAccessToken = await getSingleOperatorGitAccessToken();
+          if (!gitAccessToken) {
+            logger.error('Private repo build but no git Personal Access Token is configured', {
+              deploymentId: job.data.deploymentId,
+            });
+            throw new Error('Private repo build but no git Personal Access Token is configured — set one in Settings');
           }
         }
 

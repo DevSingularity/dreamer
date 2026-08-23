@@ -3,8 +3,8 @@ import { z } from 'zod';
 // bcrypt truncates at 72 *bytes*, not 72 characters — a string can pass a
 // 72-char check and still silently lose entropy (or collide with other
 // passwords) if it contains multi-byte UTF-8 (emoji, non-Latin scripts).
-// Shared so changePasswordSchema and resetPasswordSchema below apply the
-// same rule with the same message.
+// Shared so changePasswordSchema and setupSchema below apply the same rule
+// with the same message.
 const passwordByteLimit = z
   .string()
   .min(8, 'Password must be at least 8 characters')
@@ -13,13 +13,14 @@ const passwordByteLimit = z
     message: 'Password must be at most 72 bytes (some characters take up more than one byte)',
   });
 
-export const registerSchema = z.object({
+// local-engine: replaces the old open registerSchema. Creates the ONE admin
+// account — auth.service.ts#setupAdmin refuses to run this a second time
+// once any user row exists. See
+// docs/architecture/local-engine-auth-and-networking.md Decision 1.
+export const setupSchema = z.object({
   body: z.object({
     email: z.email().max(320).toLowerCase(),
-    password: z
-      .string()
-      .min(8, 'Password must be at least 8 characters')
-      .max(72, 'Password must be at most 72 characters'), // bcrypt silently truncates beyond 72 bytes
+    password: passwordByteLimit,
     name: z.string().min(1).max(255).trim(),
   }),
 });
@@ -31,17 +32,16 @@ export const loginSchema = z.object({
   }),
 });
 
-export type RegisterInput = z.infer<typeof registerSchema>['body'];
+export type SetupInput = z.infer<typeof setupSchema>['body'];
 export type LoginInput = z.infer<typeof loginSchema>['body'];
 
-/** Shape of a User we are safe to send to the client — never passwordHash, githubToken, etc. */
+/** Shape of a User we are safe to send to the client — never passwordHash, personalAccessToken, etc. */
 export interface PublicUser {
   id: string;
   email: string;
   name: string;
   avatarUrl: string | null;
-  githubUsername: string | null;
-  emailVerified: boolean;
+  hasGitToken: boolean; // whether personalAccessToken is set — never the token itself
 }
 
 export interface AccessTokenPayload {
@@ -70,36 +70,12 @@ export const changePasswordSchema = z.object({
 
 export type ChangePasswordInput = z.infer<typeof changePasswordSchema>['body'];
 
-// Email verification / password reset
-
-export const verifyEmailSchema = z.object({
+// Git PAT — set/clear from Settings. See
+// docs/architecture/local-engine-auth-and-networking.md Decision 2.
+export const setGitTokenSchema = z.object({
   body: z.object({
-    token: z.string().min(1, 'Token is required'),
+    personalAccessToken: z.string().min(1).max(1024),
   }),
 });
 
-export const resendVerificationSchema = z.object({
-  body: z.object({
-    email: z.email().max(320).toLowerCase(),
-  }),
-});
-
-export const forgotPasswordSchema = z.object({
-  body: z.object({
-    email: z.email().max(320).toLowerCase(),
-  }),
-});
-
-// Reuses the same "newPassword" shape/limits as changePasswordSchema above —
-// bcrypt's 72-byte truncation applies here too.
-export const resetPasswordSchema = z.object({
-  body: z.object({
-    token: z.string().min(1, 'Token is required'),
-    newPassword: passwordByteLimit,
-  }),
-});
-
-export type VerifyEmailInput = z.infer<typeof verifyEmailSchema>['body'];
-export type ResendVerificationInput = z.infer<typeof resendVerificationSchema>['body'];
-export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>['body'];
-export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>['body'];
+export type SetGitTokenInput = z.infer<typeof setGitTokenSchema>['body'];

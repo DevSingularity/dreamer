@@ -68,34 +68,40 @@ enum EnvironmentTarget {
   DEVELOPMENT
 }
 
-// NEW — which kind of one-time token a VerificationToken row represents.
-enum VerificationTokenType {
-  EMAIL_VERIFY
-  PASSWORD_RESET
-}
 
 
 // USERS
 
+// local-engine: single-admin model — see
+// docs/architecture/local-engine-auth-and-networking.md Decision 1. There is
+// exactly one row in this table in normal operation (created once by
+// POST /api/auth/setup, which refuses to run again once any row exists).
+// The schema still allows more than one row rather than hard-enforcing it,
+// since nothing downstream (Project.userId, session/audit FKs) assumes
+// single-tenancy structurally — it's an operational invariant, not a
+// constraint, same as every self-hosted-admin tool in this class.
 model User {
   id               String    @id @default(uuid()) @db.Uuid
   email            String    @unique @db.VarChar(320)
-  passwordHash     String?    @db.VarChar(255)    // bcrypt, cost factor 12. Nullable: GitHub-only accounts have no password.
+  passwordHash     String    @db.VarChar(255)    // bcrypt, cost factor 12. Not nullable — the only account-creation path (setup) always sets one; there is no GitHub-only account anymore.
   name             String    @db.VarChar(255)
   avatarUrl        String?
 
-  // GitHub OAuth (nullable — user may log in with email/password)
-  githubId         Int?      @unique
-  githubUsername   String?   @db.VarChar(255)
-  githubToken      String?   // AES-256-GCM encrypted — see encryption note below
+  // Git provider access — local-engine: Decision 2. A single Personal
+  // Access Token, AES-256-GCM encrypted at rest (lib/crypto.ts), used for
+  // BOTH listing/browsing repos (integrations/github-repo.*) and cloning
+  // private ones at build time (workers/build.worker.ts). Replaces the old
+  // GitHub App installation-token flow entirely — no GithubInstallation
+  // model, no per-project link, one token covers everything this operator
+  // owns or has access to. Nullable: browsing/cloning PUBLIC repos works
+  // with no token set at all (see github-repo.service.ts's searchPublicRepos).
+  personalAccessToken String?
 
   // Refresh token for JWT rotation
   refreshTokenHash String?   // bcrypt hash of the current refresh token
 
-  // Soft account management
-  emailVerified    Boolean   @default(false)
   isActive         Boolean   @default(true)  // false = suspended
-  
+
   createdAt        DateTime  @default(now()) @db.Timestamptz
   updatedAt        DateTime  @updatedAt @db.Timestamptz
   lastLoginAt      DateTime? @db.Timestamptz
@@ -104,37 +110,9 @@ model User {
   projects             Project[]
   sessions             UserSession[]
   auditLogs            AuditLog[]
-  deploymentsTriggered Deployment[]   // NEW — inverse side of Deployment.deployedBy
-  verificationTokens   VerificationToken[]   // NEW — email-verify + password-reset tokens
-  githubInstallations  GithubInstallation[]  // NEW — see GithubInstallation model's doc comment (GitHub App migration)
+  deploymentsTriggered Deployment[]   // inverse side of Deployment.deployedBy
 
   @@index([email])
-  @@index([githubId])
-}
-
-
-// VERIFICATION TOKENS
-// One-time tokens for email verification and password reset. Same
-// raw-token-vs-hash pattern as UserSession: the raw token handed to the
-// client is `${id}.${secret}`, only bcrypt(secret) is ever persisted as
-// tokenHash. `type` distinguishes the two use cases so this single table
-// covers both instead of adding separate columns to User for each.
-
-model VerificationToken {
-  id            String                @id @default(uuid()) @db.Uuid
-  userId        String                @db.Uuid
-  user          User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  type          VerificationTokenType
-  tokenHash     String                @unique
-
-  expiresAt     DateTime              @db.Timestamptz
-  consumedAt    DateTime?             @db.Timestamptz   // set once used — makes the token single-use
-
-  createdAt     DateTime              @default(now()) @db.Timestamptz
-
-  @@index([userId, type])
-  @@index([expiresAt])   // for a cleanup job that deletes expired/consumed tokens
 }
 
 
@@ -160,40 +138,6 @@ model UserSession {
 }
 
 
-// GITHUB APP INSTALLATIONS
-// NEW — repo access + auto-deploy webhooks go through a GitHub App now,
-// not the OAuth token above. User.githubToken / auth/github.service.ts's
-// OAuth flow stays exactly what it always was: login, signup, profile,
-// email, avatar — and (via auth.controller.ts's githubConnectRedirectHandler)
-// linking a GitHub identity to an existing email/password account. It is
-// deliberately never used for repo access — that's this model's job.
-//
-// One row per "user installed the Dreamer GitHub App on an account/org." A
-// user can have more than one (personal account + any orgs they administer)
-// — hence User 1-to-many GithubInstallation, not 1-to-1.
-model GithubInstallation {
-  id             String    @id @default(uuid()) @db.Uuid
-  installationId Int       @unique   // GitHub's own installation ID — globally unique, never reused
-  accountLogin   String    @db.VarChar(255)   // the GitHub user or org login the App is installed on
-  accountType    String    @db.VarChar(20)    // "User" | "Organization"
-
-  userId         String    @db.Uuid
-  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  // Set when GitHub sends an `installation` webhook with action "suspend" —
-  // installation access tokens stop working while suspended, without the
-  // installation being deleted. Cleared on "unsuspend".
-  suspendedAt    DateTime? @db.Timestamptz
-
-  createdAt      DateTime  @default(now()) @db.Timestamptz
-  updatedAt      DateTime  @updatedAt @db.Timestamptz
-
-  projects       Project[]
-
-  @@index([userId])
-}
-
-
 // PROJECTS
 // A project = one GitHub repo + all its deployments
 
@@ -212,19 +156,12 @@ model Project {
   defaultBranch    String    @default("main") @db.VarChar(255)
   isPrivate        Boolean   @default(false)
 
-  // NEW — GitHub App installation this project's repo access goes
-  // through (GitHub App migration — replaces the old per-project
-  // webhookId/webhookSecret pair). `installationId` is the denormalized
-  // numeric ID (matches GithubInstallation.installationId) so the webhook
-  // handler can do a single indexed lookup — `WHERE installationId = ? AND
-  // repositoryId = ?` — straight from the payload, no join required on the
-  // hot path. The `installation` relation gives cascade behavior and lets
-  // you walk from a Project to the installation's owner/suspended state.
-  //
-  // `repositoryId` is GitHub's own stable numeric repo ID — survives
-  // renames and transfers, unlike `repoFullName`.
-  installationId   Int?
-  installation     GithubInstallation? @relation(fields: [installationId], references: [installationId])
+  // local-engine: repo access is a single operator-wide PAT
+  // (User.personalAccessToken), not a per-project link — see
+  // docs/architecture/local-engine-auth-and-networking.md Decision 2.
+  // `repositoryId` is GitHub's own stable numeric repo ID (survives renames
+  // and transfers, unlike `repoFullName`) — kept as the sole webhook lookup
+  // key (webhooks/github-webhook.service.ts's findProjectsForPush).
   repositoryId     Int?
 
   autoDeployEnabled Boolean  @default(true)   // Settings page "Git" toggle — see webhooks/github-webhook.service.ts's decideOutcome
@@ -272,7 +209,7 @@ model Project {
 
   @@index([userId, deletedAt])      // "my projects" query — filters out deleted
   @@index([slug])
-  @@index([installationId, repositoryId])   // webhook handler lookup: "which project owns this repo?"
+  @@index([repositoryId])   // webhook handler lookup: "which project owns this repo?"
 }
 
 

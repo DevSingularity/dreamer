@@ -12,10 +12,14 @@
 # your first deploy:
 #   docker build -t dreamer-build-engine:local build-engine
 #
-# Security posture, same as docker-compose.prod.yml: ONLY nginx publishes
-# a host port. Everything else — postgres, redis, minio, api-server,
-# build-worker, frontend, reverse-proxy — is reachable only over the
-# private compose network.
+# Security posture: nginx publishes 80/443 for the public internet — see
+# nginx/templates for exactly what it routes (deployed apps + custom
+# domains only, by default). frontend and api-server ALSO publish host
+# ports, but bound to 127.0.0.1 only — reachable from the VPS itself (or
+# over an SSH tunnel), never from the public internet. Everything else —
+# postgres, redis, minio, build-worker, reverse-proxy — is reachable only
+# over the private compose network. See
+# docs/architecture/local-engine-auth-and-networking.md Decision 4.
 
 services:
   postgres:
@@ -90,10 +94,15 @@ services:
       context: ./api-server
       dockerfile: Dockerfile
     restart: unless-stopped
-    ports:
-      - "127.0.0.1:8000:8000"
     env_file:
       - ./api-server/.env
+    # Dashboard's API — loopback-only, same reasoning as frontend below.
+    # See docs/architecture/local-engine-auth-and-networking.md Decision 4.
+    # The ONE exception is /api/webhooks/github, which nginx can also reach
+    # container-to-container over the compose network when
+    # ENABLE_PUSH_DEPLOY=true — that path never needs this host port at all.
+    ports:
+      - "127.0.0.1:8000:8000"
     depends_on:
       postgres:
         condition: service_healthy
@@ -140,6 +149,12 @@ services:
         NEXT_PUBLIC_SOCKET_URL: ${NEXT_PUBLIC_SOCKET_URL}
         NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL}
     restart: unless-stopped
+    # Dashboard — local-engine binds this to the VPS's own loopback only,
+    # never a public interface. See
+    # docs/architecture/local-engine-auth-and-networking.md Decision 4.
+    # Reach it with `ssh -L 3000:localhost:3000 user@your-vps`, then open
+    # http://localhost:3000 on YOUR machine. nginx below never routes any
+    # public hostname to this service.
     ports:
       - "127.0.0.1:3000:3000"
 
@@ -148,8 +163,6 @@ services:
       context: ./reverse-proxy
       dockerfile: Dockerfile
     restart: unless-stopped
-    ports:
-      - "127.0.0.1:9000:9000"
     env_file:
       - ./reverse-proxy/.env
     depends_on:
@@ -161,12 +174,20 @@ services:
   nginx:
     image: nginx:1.27-alpine
     restart: unless-stopped
-    profiles: ["bundled-nginx"]
     ports:
-      - "${HTTP_PORT:-80}:80"
-      - "${HTTPS_PORT:-443}:443"
+      - "80:80"
+      - "443:443"
     environment:
       DOMAIN: ${DOMAIN:?DOMAIN must be set — see .env.example}
+      # local-engine — see docs/architecture/local-engine-auth-and-networking.md
+      # Decision 4. Off by default: nginx serves ONLY *.${DOMAIN} (deployed
+      # apps + custom domains) and answers for nothing else at all — no
+      # bare ${DOMAIN}, no api.${DOMAIN}. Set to "true" to additionally
+      # expose hooks.${DOMAIN}, routing ONLY /api/webhooks/github to
+      # api-server, for GitHub push-to-deploy (see
+      # webhooks/github-webhook.controller.ts). Nothing else on api-server
+      # is EVER reachable through nginx, regardless of this flag.
+      ENABLE_PUSH_DEPLOY: ${ENABLE_PUSH_DEPLOY:-false}
     volumes:
       - ./nginx/templates:/etc/nginx/templates:ro
       - ./certbot/letsencrypt:/etc/letsencrypt:ro

@@ -3,10 +3,6 @@ import type { FrameworkPresetId } from './framework-presets';
 
 export const detectBuildConfigSchema = z.object({
   body: z.object({
-    // Optional — omitted for a repo picked via public search (no
-    // installation behind it). See build-config.controller.ts's
-    // resolveDetectionAccessToken for the fallback when it's absent.
-    installationId: z.number().int().positive().optional(),
     repoFullName: z.string().min(1).max(512),
     branch: z.string().min(1).max(255).trim(),
     // Empty string means "repo root" — distinct from undefined so the

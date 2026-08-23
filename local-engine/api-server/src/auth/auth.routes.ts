@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import {
-  registerHandler,
+  setupHandler,
+  setupStatusHandler,
   loginHandler,
   refreshHandler,
   logoutHandler,
@@ -9,36 +10,30 @@ import {
   listSessionsHandler,
   revokeSessionHandler,
   changePasswordHandler,
-  verifyEmailHandler,
-  resendVerificationHandler,
-  forgotPasswordHandler,
-  resetPasswordHandler,
-  githubRedirectHandler,
-  githubConnectRedirectHandler,
+  setGitTokenHandler,
+  clearGitTokenHandler,
 } from './auth.controller';
 import { requireAuth } from './auth.middleware';
 import { validate } from '../middleware/validate.middleware';
 import {
   loginRateLimiter,
-  registerRateLimiter,
+  setupRateLimiter,
   refreshRateLimiter,
-  resendVerificationRateLimiter,
-  forgotPasswordRateLimiter,
 } from '../middleware/rate-limiter.middleware';
 import {
-  registerSchema,
+  setupSchema,
   loginSchema,
   changePasswordSchema,
-  verifyEmailSchema,
-  resendVerificationSchema,
-  forgotPasswordSchema,
-  resetPasswordSchema,
+  setGitTokenSchema,
 } from './auth.types';
 
 export const authRouter = Router();
 
-// Email + password
-authRouter.post('/register', registerRateLimiter, validate(registerSchema), registerHandler);
+// local-engine: single-admin setup instead of open registration — see
+// docs/architecture/local-engine-auth-and-networking.md Decision 1.
+authRouter.get('/setup-status', setupStatusHandler);
+authRouter.post('/setup', setupRateLimiter, validate(setupSchema), setupHandler);
+
 authRouter.post('/login', loginRateLimiter, validate(loginSchema), loginHandler);
 authRouter.post('/refresh', refreshRateLimiter, refreshHandler);
 authRouter.post('/logout', logoutHandler);
@@ -50,15 +45,7 @@ authRouter.get('/sessions', requireAuth, listSessionsHandler);
 authRouter.delete('/sessions/:sessionId', requireAuth, revokeSessionHandler);
 authRouter.post('/change-password', requireAuth, validate(changePasswordSchema), changePasswordHandler);
 
-// Email verification / password reset — all public, unauthenticated
-authRouter.post('/verify-email', validate(verifyEmailSchema), verifyEmailHandler);
-authRouter.post('/resend-verification', resendVerificationRateLimiter, validate(resendVerificationSchema), resendVerificationHandler);
-authRouter.post('/forgot-password', forgotPasswordRateLimiter, validate(forgotPasswordSchema), forgotPasswordHandler);
-authRouter.post('/reset-password', validate(resetPasswordSchema), resetPasswordHandler);
-
-// GitHub — login/signup + account-linking entry points. Both land on the
-// single shared callback at GET /api/github-app/callback (see
-// integrations/github-app-install.routes.ts), which also handles repo
-// installation — there is no /github/callback route on this router anymore.
-authRouter.get('/github', githubRedirectHandler);
-authRouter.get('/github/connect', requireAuth, githubConnectRedirectHandler);
+// Git PAT (Settings page) — see
+// docs/architecture/local-engine-auth-and-networking.md Decision 2.
+authRouter.put('/git-token', requireAuth, validate(setGitTokenSchema), setGitTokenHandler);
+authRouter.delete('/git-token', requireAuth, clearGitTokenHandler);

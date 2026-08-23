@@ -28,7 +28,7 @@ const RESERVED_SLUGS = new Set(['www', 'api', 'app', 'admin', 'dashboard', 'stag
  * Matches https://github.com/owner/repo(.git) and git@github.com:owner/repo.git.
  * Still used for display/clone-URL purposes even though repoFullName is no
  * longer what the webhook handler looks projects up by — that's
- * installationId + repositoryId now (see webhooks/github-webhook.service.ts's
+ * repositoryId now (see webhooks/github-webhook.service.ts's
  * findProjectsForPush). A project created via the wizard's repo picker gets
  * repoFullName straight from GitHub's response instead of this regex; this
  * is the fallback for the rare case repoUrl was typed by hand.
@@ -59,14 +59,9 @@ function toPublicProject(project: Project): PublicProject {
     detectedDeploymentType: project.detectedDeploymentType,
     autoDeployEnabled: project.autoDeployEnabled,
     // A push can only ever trigger a deploy once this project actually
-    // points at a specific repo within an installation — whether that
-    // installation is still USABLE (not suspended/removed) isn't checked
-    // here on purpose: that's a live GitHub API call this DTO-mapping
-    // function has no business making on every list-projects request.
-    // getProjectById's caller can always attempt a manual deploy to find
-    // out the hard way, same as before this migration.
-    autoDeployReady: project.installationId !== null && project.repositoryId !== null,
-    installationId: project.installationId,
+    // points at a specific repo's numeric ID — that's the whole check now
+    // that there's no per-project installation to also be suspended/removed.
+    autoDeployReady: project.repositoryId !== null,
     repositoryId: project.repositoryId,
     createdAt: project.createdAt,
   };
@@ -140,33 +135,12 @@ async function generateUniqueProjectSlug(name: string): Promise<string> {
   );
 }
 
-/**
- * Confirms a GithubInstallation actually belongs to this user before its
- * numeric ID is trusted for anything — installation IDs are easily
- * guessable sequential integers, not secrets, so this check is what stands
- * between "user A can only ever link projects to installations they
- * personally connected" and "user A can link a project to user B's
- * installation and read/deploy repos they were never granted access to."
- * Called from both createProject and updateProject — anywhere
- * installationId arrives from the client, this runs first.
- */
-async function assertInstallationOwnership(installationId: number, userId: string): Promise<void> {
-  const installation = await prisma.githubInstallation.findFirst({ where: { installationId, userId } });
-  if (!installation) {
-    throw new NotFoundError('GitHub installation not found', 'GITHUB_INSTALLATION_NOT_FOUND');
-  }
-}
-
 export async function createProject(
   userId: string,
   input: CreateProjectInput,
   meta: AuditMeta
 ): Promise<PublicProject> {
   const slug = await generateUniqueProjectSlug(input.name);
-
-  if (input.installationId !== undefined) {
-    await assertInstallationOwnership(input.installationId, userId);
-  }
 
   // The wizard always sends a frameworkPresetId (even "static" for "we
   // couldn't detect anything") — this only stays undefined for a
@@ -185,13 +159,10 @@ export async function createProject(
       repoFullName: parseRepoFullName(input.repoUrl),
       defaultBranch: input.defaultBranch ?? 'main',
       isPrivate: input.isPrivate ?? false,
-      // NEW — see project.types.ts's createProjectSchema doc comment. No
-      // separate "register a webhook" step needed anymore (unlike the
-      // per-repo-webhook version of this function, before the GitHub App
-      // migration) — the App's single global webhook is already listening
-      // for every repo it can see the moment it's installed; recording
-      // these two IDs is the entire "connect" step now.
-      installationId: input.installationId ?? null,
+      // See project.types.ts's createProjectSchema doc comment. Recording
+      // repositoryId is the entire "connect for auto-deploy" step now — see
+      // docs/architecture/local-engine-auth-and-networking.md Decision 3
+      // for the manually-configured-webhook flow this feeds.
       repositoryId: input.repositoryId ?? null,
       // NEW — set by the new-project wizard's framework-detection step (see
       // build-config/). Stored as a SNAPSHOT of whatever the user confirmed
@@ -294,14 +265,6 @@ export async function updateProject(
 ): Promise<PublicProject> {
   await findOwnedProject(projectId, userId); // 404s before issuing the UPDATE
 
-  // NEW — relinking to a (re-)installed App/repo (see project.types.ts's
-  // updateProjectSchema doc comment). Same ownership rule as createProject:
-  // never trust a client-supplied installationId without checking it's
-  // actually this user's.
-  if (input.installationId !== undefined) {
-    await assertInstallationOwnership(input.installationId, userId);
-  }
-
   const project = await prisma.project.update({
     where: { id: projectId },
     data: {
@@ -313,7 +276,6 @@ export async function updateProject(
       outputDirectory: input.outputDirectory,
       rootDirectory: input.rootDirectory,
       autoDeployEnabled: input.autoDeployEnabled,
-      installationId: input.installationId,
       repositoryId: input.repositoryId,
     },
   });

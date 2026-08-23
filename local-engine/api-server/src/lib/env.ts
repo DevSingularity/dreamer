@@ -78,47 +78,27 @@ const envSchema = z.object({
     .string()
     .length(64, 'ENCRYPTION_KEY must be a 64-character hex string (32 bytes)'),
 
-  // Single GitHub identity for everything: login/signup, account-linking,
-  // AND repo access/webhooks. GITHUB_APP_CLIENT_ID/SECRET are the App's own
-  // "Identifying and authorizing users" OAuth credentials (github.com App
-  // settings page) — used only to resolve who the user is (auth/github.service.ts).
-  // Nothing repo-scoped comes from this pair; that's still the installation
-  // access token below. There is deliberately no separate GitHub OAuth App
-  // anymore — see docs/deployments/github-app-unified-auth.md.
-  GITHUB_APP_CLIENT_ID: z.string().min(1, 'GITHUB_APP_CLIENT_ID is required'),
-  GITHUB_APP_CLIENT_SECRET: z.string().min(1, 'GITHUB_APP_CLIENT_SECRET is required'),
+  // Optional — the shared secret pasted into each repo's own webhook
+  // settings AND here, so webhooks/github-webhook.service.ts can verify
+  // X-Hub-Signature-256. Unset by default: a fresh local-engine install has
+  // NO working push-to-deploy webhook until the operator both sets this
+  // AND turns on ENABLE_PUSH_DEPLOY (see docs/architecture/
+  // local-engine-auth-and-networking.md Decision 3 & 4). Manual "Redeploy"
+  // from the dashboard always works regardless of whether this is set.
+  GITHUB_WEBHOOK_SECRET: z.string().optional(),
 
-  // Everything that touches a repo — listing, cloning, webhooks — goes
-  // through the App via a per-installation access token (see
-  // lib/github-app.ts). See docs/deployments/github-app-migration.md for
-  // full setup steps.
-  GITHUB_APP_ID: z.string().min(1, 'GITHUB_APP_ID is required'),
-  GITHUB_APP_SLUG: z.string().min(1, 'GITHUB_APP_SLUG is required — the "yourapp" in github.com/apps/yourapp'),
-  // PEM contents of the App's private key. Literal "\n" sequences are
-  // normalized back to real newlines in lib/github-app.ts — most .env
-  // loaders can't store an actual multi-line value cleanly.
-  GITHUB_APP_PRIVATE_KEY: z.string().min(1, 'GITHUB_APP_PRIVATE_KEY is required'),
-  // The ONE webhook secret configured on the App itself — covers every
-  // installation, every repo. Nothing per-project to manage; see
-  // webhooks/github-webhook.service.ts.
-  GITHUB_APP_WEBHOOK_SECRET: z.string().min(1, 'GITHUB_APP_WEBHOOK_SECRET is required'),
-
-  // This api-server's own publicly reachable origin — used to build the
-  // App's webhook URL (`${API_PUBLIC_URL}/api/webhooks/github`) and the
-  // single user-authorization + installation callback URL
-  // (`${API_PUBLIC_URL}/api/github-app/callback`). Deliberately separate
-  // from FRONTEND_URL (the browser app's origin). Defaults to localhost so
-  // local dev boots without extra config; a real
-  // deployment needs a real HTTPS URL here or GitHub can't reach either
-  // endpoint.
+  // This api-server's own publicly reachable origin — only meaningful when
+  // ENABLE_PUSH_DEPLOY is on (used to build the webhook URL you paste into
+  // GitHub: `${API_PUBLIC_URL}/api/webhooks/github`). Defaults to
+  // localhost so local dev boots without extra config.
   API_PUBLIC_URL: z.url().default('http://localhost:8000'),
-
-  // NEW — transactional email (verify-email / reset-password links).
-  // Required (not optional) since these flows are now mandatory for every
-  // email+password signup — an unconfigured deploy should fail at boot,
-  // not silently swallow every verification email at runtime.
-  RESEND_API_KEY: z.string().min(1, 'RESEND_API_KEY is required'),
-  EMAIL_FROM: z.string().min(1, 'EMAIL_FROM is required'), // e.g. "Dreamer <noreply@yourdomain.com>"
+  // Whether nginx is expected to expose /api/webhooks/github publicly at
+  // all — see docs/architecture/local-engine-auth-and-networking.md
+  // Decision 4. Purely informational to api-server itself (nginx is what
+  // actually enforces this; this app-level route is always mounted either
+  // way, see app.ts) — surfaced in Settings so the dashboard can show
+  // whether push-deploy is reachable from the internet right now.
+  ENABLE_PUSH_DEPLOY: z.coerce.boolean().default(false),
 
   // ── S3-compatible storage — MinIO (bundled in docker-compose.yml),
   // not AWS S3. @aws-sdk/client-s3 is still the client (MinIO speaks the

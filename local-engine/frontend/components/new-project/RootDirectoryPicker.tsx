@@ -118,16 +118,11 @@ function updateNodeByPath(
 }
 
 export function RootDirectoryPicker({
-  installationId,
   repoFullName,
   branch,
   onContinue,
   onCancel,
 }: {
-  // null for a repo picked via public search (see PublicRepoSearch.tsx) —
-  // the API falls back to the caller's OAuth token or an unauthenticated
-  // call in that case.
-  installationId: number | null;
   repoFullName: string;
   /** The repo's actual default branch (from GitHub) — used to flag which
    * option in the branch dropdown is "(default)" and as the initial
@@ -158,7 +153,7 @@ export function RootDirectoryPicker({
   async function loadRoot(forBranch: string) {
     setRootError(null);
     try {
-      const entries = await listGithubRepoContents(installationId, repoFullName, forBranch, "");
+      const entries = await listGithubRepoContents(repoFullName, forBranch, "");
       setRoots(
         entries
           .filter((e) => e.type === "dir")
@@ -183,7 +178,7 @@ export function RootDirectoryPicker({
   useEffect(() => {
     if (hasRequestedBranches.current) return;
     hasRequestedBranches.current = true;
-    listRepoBranches(installationId, repoFullName, branch)
+    listRepoBranches(repoFullName, branch)
       .then(setBranches)
       .catch((err) => setBranchesError(describeApiError(err, "Failed to load branches")))
       .finally(() => setBranchesLoading(false));
@@ -232,7 +227,7 @@ export function RootDirectoryPicker({
     setRoots((prev) => prev && updateNodeByPath(prev, path, (n) => ({ ...n, loading: true, error: null })));
 
     try {
-      const entries = await listGithubRepoContents(installationId, repoFullName, selectedBranch, path);
+      const entries = await listGithubRepoContents(repoFullName, selectedBranch, path);
       const children: DirectoryNode[] = entries
         .filter((e) => e.type === "dir")
         .map((entry) => ({ entry, expanded: false, loading: false, error: null, children: null }));

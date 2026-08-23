@@ -7,7 +7,6 @@ import {
   createDeployment,
   deleteProject,
   listRepoBranches,
-  GITHUB_APP_INSTALL_URL,
   updateProject,
   describeApiError,
 } from "@/lib/dashboard-api";
@@ -107,11 +106,11 @@ export default function ProjectSettingsPage() {
     hasRequestedBranches.current = true;
 
     setBranchesLoading(true);
-    listRepoBranches(project.installationId, project.repoFullName, project.defaultBranch)
+    listRepoBranches(project.repoFullName, project.defaultBranch)
       .then(setBranches)
       .catch((err) => setBranchesError(describeApiError(err, "Failed to load branches")))
       .finally(() => setBranchesLoading(false));
-  }, [project.installationId, project.repoFullName, project.defaultBranch]);
+  }, [project.repoFullName, project.defaultBranch]);
 
   // The currently-saved branch is always selectable even if it's somehow
   // missing from what GitHub returned (renamed/deleted upstream) — the
@@ -420,20 +419,15 @@ export default function ProjectSettingsPage() {
         {project.autoDeployReady ? (
           <p className="text-xs text-zinc-500 -mt-2">
             A push to <span className="font-mono text-zinc-400">{defaultBranch}</span> redeploys this project automatically,
-            pinned to the exact commit pushed.
+            pinned to the exact commit pushed — once push-to-deploy is configured (see the README&apos;s
+            &quot;Optional: push-to-deploy on git push&quot; section).
           </p>
         ) : (
-          <div className="text-xs text-zinc-500 -mt-2 flex items-center gap-2 flex-wrap">
-            <span>
-              This project isn&apos;t linked to a GitHub App installation — pushes won&apos;t trigger a deploy until it is.
-            </span>
-            <a
-              href={GITHUB_APP_INSTALL_URL}
-              className="text-blue-400 hover:text-blue-300 font-medium"
-            >
-              Connect GitHub
-            </a>
-          </div>
+          <p className="text-xs text-zinc-500 -mt-2">
+            This project isn&apos;t linked to a repository ID, so a push can never trigger a deploy for it — that
+            normally only happens for a project created outside the Import wizard. Manual deploys still work
+            regardless.
+          </p>
         )}
 
         {gitError && <p className="text-sm text-red-400">{gitError}</p>}

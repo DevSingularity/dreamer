@@ -1,25 +1,18 @@
 import type { Request, Response } from 'express';
 import { logger } from '../lib/logger';
-import {
-  verifyGithubSignature,
-  findProjectsForPush,
-  handlePushEvent,
-  handleInstallationEvent,
-  handleInstallationRepositoriesEvent,
-} from './github-webhook.service';
-import {
-  githubPushPayloadSchema,
-  githubInstallationPayloadSchema,
-  githubInstallationRepositoriesPayloadSchema,
-} from './github-webhook.types';
+import { verifyGithubSignature, findProjectsForPush, handlePushEvent } from './github-webhook.service';
+import { githubPushPayloadSchema } from './github-webhook.types';
 
 /**
- * POST /api/webhooks/github — the ONE endpoint the GitHub App's webhook
- * points at, covering every installation and every repo it can see (see
- * docs/deployments/github-app-migration.md). Mounted PUBLICLY in app.ts (no
+ * POST /api/webhooks/github — local-engine: a plain classic repo webhook
+ * (see docs/architecture/local-engine-auth-and-networking.md Decision 3),
+ * added by hand to each repo's own webhook settings, sharing one operator-
+ * chosen secret (GITHUB_WEBHOOK_SECRET). Mounted PUBLICLY in app.ts (no
  * requireAuth: GitHub, not a logged-in user, calls this) — signature
  * verification is what stands in for auth here, same role a JWT plays on
- * every other route.
+ * every other route. Also the only route in this codebase that's ever
+ * reachable through the public nginx path when ENABLE_PUSH_DEPLOY=true —
+ * see Decision 4.
  *
  * Always returns fast and always returns 2xx once a delivery is verified,
  * even for events this handler chooses not to act on — a webhook endpoint
@@ -56,16 +49,10 @@ export async function githubWebhookHandler(req: Request, res: Response) {
     case 'push':
       return handlePush(req, res, deliveryId ?? undefined);
 
-    case 'installation':
-      return handleInstallation(req, res);
-
-    case 'installation_repositories':
-      return handleInstallationRepositories(req, res);
-
     default:
-      // The App is only ever subscribed to push/installation/installation_repositories
-      // (see docs/deployments/github-app-migration.md's setup steps) — this
-      // is defensive, not expected.
+      // A classic repo webhook only needs to be subscribed to push events
+      // (plus GitHub's own automatic ping on setup) — this is defensive,
+      // not expected, in case the operator's webhook config sends more.
       return res.status(200).json({ received: true, ignored: true, reason: `Unhandled event type "${eventType}"` });
   }
 }
@@ -77,13 +64,13 @@ async function handlePush(req: Request, res: Response, deliveryId: string | unde
     return res.status(400).json({ error: 'Malformed push payload', code: 'WEBHOOK_BAD_PAYLOAD' });
   }
 
-  const { installation, repository } = parsed.data;
-  const projects = await findProjectsForPush(installation.id, repository.id);
+  const { repository } = parsed.data;
+  const projects = await findProjectsForPush(repository.id);
 
   if (projects.length === 0) {
-    // A valid, correctly-signed delivery for a repo Dreamer just doesn't
-    // have a Project for (e.g. the App is installed on more repos than the
-    // user has actually imported) — not an error, nothing to do.
+    // A valid, correctly-signed delivery for a repo with no matching
+    // Project (repositoryId never set, or set to something else) — not an
+    // error, nothing to do.
     return res.status(200).json({ received: true, ignored: true, reason: 'No project linked to this repository' });
   }
 
@@ -96,24 +83,4 @@ async function handlePush(req: Request, res: Response, deliveryId: string | unde
   );
 
   return res.status(200).json({ received: true, outcomes });
-}
-
-async function handleInstallation(req: Request, res: Response) {
-  const parsed = githubInstallationPayloadSchema.safeParse(req.body);
-  if (!parsed.success) {
-    return res.status(400).json({ error: 'Malformed installation payload', code: 'WEBHOOK_BAD_PAYLOAD' });
-  }
-
-  await handleInstallationEvent(parsed.data);
-  return res.status(200).json({ received: true });
-}
-
-async function handleInstallationRepositories(req: Request, res: Response) {
-  const parsed = githubInstallationRepositoriesPayloadSchema.safeParse(req.body);
-  if (!parsed.success) {
-    return res.status(400).json({ error: 'Malformed installation_repositories payload', code: 'WEBHOOK_BAD_PAYLOAD' });
-  }
-
-  await handleInstallationRepositoriesEvent(parsed.data);
-  return res.status(200).json({ received: true });
 }

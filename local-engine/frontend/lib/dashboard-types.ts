@@ -57,11 +57,10 @@ export interface Project {
   detectedFramework: Framework | null;
   detectedDeploymentType: DeploymentType | null;
   autoDeployEnabled: boolean;
-  // NEW — whether a push can actually trigger a deploy right now: the
-  // project has a linked GitHub App installation + repo. See the API's
-  // project.service.ts toPublicProject for the exact derivation.
+  // Whether a push can actually trigger a deploy right now: the project
+  // has a linked repositoryId. See the API's project.service.ts
+  // toPublicProject.
   autoDeployReady: boolean;
-  installationId: number | null;
   repositoryId: number | null;
 }
 
@@ -169,26 +168,16 @@ export interface RepoEntry {
   type: "file" | "dir";
 }
 
-// NEW — mirrors the shape listInstallationsHandler returns
-// (src/integrations/github-repo.controller.ts). A user can have more than
-// one (personal account + any orgs they administer), so the wizard shows a
-// picker whenever there's more than one row.
-export interface GithubInstallation {
-  installationId: number;
-  accountLogin: string;
-  accountType: string;
-  suspended: boolean;
-}
-
 // Mirrors the repo shape listReposHandler/searchPublicReposHandler return.
-// installationId is null for a repo found via public search (see
-// PublicRepoSearch.tsx) — auto-deploy won't work for a project created from
-// one of these until the App is separately installed on it; everything
-// else (manual deploy, redeploy) works fine since a public repo needs no
-// credentials to clone in the first place.
+// No installationId anymore — see
+// docs/architecture/local-engine-auth-and-networking.md Decision 2: one
+// operator-wide PAT, not per-installation. A repo from listReposHandler
+// (the operator's own PAT) vs. searchPublicReposHandler (any public repo
+// by name) are functionally identical from here on — both work for manual
+// deploy/redeploy immediately, and for push-to-deploy once
+// GITHUB_WEBHOOK_SECRET + ENABLE_PUSH_DEPLOY are configured (see Decision 3).
 export interface GithubRepoSummary {
   repositoryId: number;
-  installationId: number | null;
   fullName: string;
   name: string;
   defaultBranch: string;

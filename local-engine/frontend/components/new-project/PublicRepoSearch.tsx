@@ -9,16 +9,14 @@ import { Alert } from "@/components/ui/Alert";
 
 /**
  * Search ANY public GitHub repo by name — deliberately separate from the
- * installation-scoped repo list above it (RepoPicker.tsx), not a filter on
- * top of it. A result picked here has no GitHub App installation behind
- * it, so auto-deploy on push won't work until the App is separately
- * installed on it — everything else (manual deploy, redeploy) works fine
- * immediately, since a public repo needs no credentials to clone.
+ * PAT-backed repo list above it (RepoPicker.tsx), not a filter on top of
+ * it. Works even with no PAT set at all — useful for a repo the operator
+ * doesn't own/collaborate on, so it wouldn't show up in that list. See
+ * docs/architecture/local-engine-auth-and-networking.md Decision 2.
  *
- * This is a plain text query, not a URL paste — matches how the
- * installation-scoped list above it works (pick from a list of names, not
- * paste a link), and means the same repositoryId ends up on the project
- * either way.
+ * This is a plain text query, not a URL paste — matches how the PAT-backed
+ * list above it works (pick from a list of names, not paste a link), and
+ * means the same repositoryId ends up on the project either way.
  */
 export function PublicRepoSearch({ onSelect }: { onSelect: (repo: GithubRepoSummary) => void }) {
   const [query, setQuery] = useState("");
@@ -48,8 +46,8 @@ export function PublicRepoSearch({ onSelect }: { onSelect: (repo: GithubRepoSumm
     <div className="mt-8">
       <h2 className="text-sm font-medium text-zinc-300 mb-1">Import any public repository</h2>
       <p className="text-xs text-zinc-500 mb-3">
-        Not yours, or not covered by an installed App? Search any public GitHub repo by name — auto-deploy on push
-        needs the GitHub App installed on it separately, but you can deploy and redeploy it right away.
+        Not yours, or no git token set? Search any public GitHub repo by name — you can deploy and redeploy it right
+        away.
       </p>
 
       <form onSubmit={handleSearch} className="relative mb-3">

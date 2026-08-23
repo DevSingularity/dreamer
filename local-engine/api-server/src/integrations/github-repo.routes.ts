@@ -1,9 +1,8 @@
 import { Router } from 'express';
 import { validate } from '../middleware/validate.middleware';
-import { listBranchesSchema, listRepoDirectorySchema, listReposSchema, searchPublicReposSchema } from './github-repo.types';
+import { listBranchesSchema, listRepoDirectorySchema, searchPublicReposSchema } from './github-repo.types';
 import {
   listBranchesHandler,
-  listInstallationsHandler,
   listRepoDirectoryHandler,
   listReposHandler,
   searchPublicReposHandler,
@@ -12,10 +11,10 @@ import {
 /** Mounted at /api/github in app.ts. requireAuth applied at the mount point. */
 export const githubRepoRouter = Router();
 
-// NEW — which GitHub accounts/orgs the caller has installed the App on.
-githubRepoRouter.get('/installations', listInstallationsHandler);
-githubRepoRouter.get('/repos', validate(listReposSchema), listReposHandler);
-// Any public repo, independent of installation — see searchPublicReposHandler.
+// local-engine: every repo the operator's stored PAT can see — no
+// installationId param anymore, see github-repo.controller.ts.
+githubRepoRouter.get('/repos', listReposHandler);
+// Any public repo, by name — works with no PAT set at all.
 githubRepoRouter.get('/public-repos', validate(searchPublicReposSchema), searchPublicReposHandler);
 githubRepoRouter.get('/repo-contents', validate(listRepoDirectorySchema), listRepoDirectoryHandler);
 // Shared by the wizard's branch picker and the project-settings Git panel.

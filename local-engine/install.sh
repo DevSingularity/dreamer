@@ -4,14 +4,20 @@
 #
 # Single command that takes a fresh VPS to a running Dreamer Local Engine:
 # installs Docker if missing, generates every secret this stack needs,
-# obtains a wildcard TLS certificate, builds the build-engine image,
+# obtains a wildcard-only TLS certificate, builds the build-engine image,
 # and brings up Postgres, Redis, MinIO, api-server, build-worker,
 # frontend, reverse-proxy, and nginx — all as containers on THIS box.
 # No AWS account, no managed cloud Postgres/Redis/S3 needed anywhere.
 #
-# What this does NOT do for you (can't — requires an account/app only you
-# can create): a GitHub App. Gets a clearly-marked TODO placeholder in the
-# generated api-server/.env; see the summary this script prints at the end.
+# --domain covers ONLY *.yourdomain.com — the apex is deliberately left
+# alone (see docs/architecture/local-engine-auth-and-networking.md's
+# samanp.xyz walkthrough): if you already have a site at the bare domain
+# (Vercel, Netlify, whatever), this never touches it. Only add a DNS
+# record for *.yourdomain.com pointing at this box.
+#
+# No external accounts needed at all to finish this script — no GitHub
+# App, no email provider (see Decision 1 & 2: single-admin login + a git
+# Personal Access Token, both set up in-app after first login, not here).
 #
 # Deliberately mirrors the repo root's own scripts/install.sh step-for-step
 # (same flag names, same ordering, same cert-before-nginx / migrate-after-up
@@ -30,8 +36,11 @@ usage() {
   cat <<EOF
 Usage: $0 --domain yourdomain.com [--email you@yourdomain.com] [--cloudflare-token TOKEN]
 
-  --domain            Required. The apex domain you control, e.g. deploy.yourdomain.com
-                       (no "https://", no leading "*.", no subdomain).
+  --domain            Required. The domain whose WILDCARD you're pointing
+                       at this box, e.g. yourdomain.com (no "https://", no
+                       leading "*."). Only *.yourdomain.com is touched —
+                       the bare apex is left alone; see this script's own
+                       header comment.
   --email              Optional. Used for Let's Encrypt expiry notices.
                        Defaults to admin@<domain>.
   --cloudflare-token   Optional. A Cloudflare API token (Zone:DNS:Edit
@@ -75,7 +84,7 @@ bash "${SCRIPT_DIR}/scripts/lib/generate-env.sh" "${DOMAIN}" "${POSTGRES_PASSWOR
 # --- 3. TLS certificate (BEFORE bringing nginx up — same reasoning as the
 # repo root's own install.sh: nginx's config already references cert
 # files unconditionally and fails to start without them) -----------------
-log_step "Obtaining wildcard TLS certificate for ${DOMAIN} and *.${DOMAIN}"
+log_step "Obtaining wildcard-only TLS certificate for *.${DOMAIN}"
 bash "${SCRIPT_DIR}/scripts/lib/issue-certificate.sh" "${DOMAIN}" "${EMAIL}" "${CLOUDFLARE_TOKEN}"
 
 # --- 4. Build the build-engine image --------------------------------------
@@ -95,8 +104,9 @@ docker compose --env-file .env.deploy up -d --build
 # --- 6. Database migrations ------------------------------------------------
 # `docker compose run` (not `exec`), same reasoning as the repo root's own
 # install.sh: a fresh one-off container from the api-server image, not the
-# long-running service, which may well be crash-looping right now on the
-# still-empty GITHUB_APP_* placeholders — expected at this point, not a bug.
+# long-running service — which boots fine now with no external creds
+# required at all (Decision 1 & 2: no GitHub App, no Resend account; a git
+# PAT is set later, in-app, from Settings — see summary this script prints).
 log_step "Running database migrations"
 attempt=0
 until docker compose --env-file .env.deploy run --rm --entrypoint sh api-server -c "npx prisma migrate deploy"; do
@@ -121,11 +131,20 @@ PUBLIC_IP="$(detect_public_ip)"
 echo
 log_ok "Install complete."
 echo
-echo "  Dashboard:  https://${DOMAIN}"
-echo "  API:        https://api.${DOMAIN}"
 echo "  Deployed apps live under: https://<project-slug>.${DOMAIN}"
 echo
-log_warn "Point ${DOMAIN} and *.${DOMAIN} at this box's IP (${PUBLIC_IP}) if you haven't already."
-log_warn "api-server/.env still has TODO placeholders for your GitHub App — the api-server"
-log_warn "container will crash-loop until those are filled in. See api-server/.env.example"
-log_warn "for the exact steps, then: docker compose --env-file .env.deploy restart api-server build-worker"
+log_warn "Point *.${DOMAIN} (wildcard) at this box's IP (${PUBLIC_IP}) if you haven't already — the bare ${DOMAIN} is untouched, point it wherever it already goes."
+echo
+log_step "The dashboard is intentionally NOT public — see"
+log_step "docs/architecture/local-engine-auth-and-networking.md Decision 4."
+echo "  From THIS machine (or over SSH):"
+echo "    ssh -L 3000:localhost:3000 -L 8000:localhost:8000 $(whoami)@${PUBLIC_IP}"
+echo "  then open http://localhost:3000 in your own browser — that first load"
+echo "  is the one-time admin setup screen (name/email/password)."
+echo
+log_step "Optional next steps, both done from Settings after you log in — not required to start deploying:"
+echo "  - Add a git Personal Access Token (Settings > Git) to deploy private repos."
+echo "  - Turn on push-to-deploy: set GITHUB_WEBHOOK_SECRET + ENABLE_PUSH_DEPLOY=true"
+echo "    in api-server/.env and docker-compose.yml, then"
+echo "    docker compose --env-file .env.deploy up -d nginx api-server build-worker"
+echo "    — see api-server/.env.example for the exact vars."

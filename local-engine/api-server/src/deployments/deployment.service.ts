@@ -4,6 +4,7 @@ import { redis } from '../lib/redis';
 import { audit, type AuditMeta } from '../lib/audit';
 import { BadRequestError, ConflictError, NotFoundError } from '../lib/errors';
 import { decryptFromColumn } from '../lib/crypto';
+import { getSingleOperatorGitAccessToken } from '../lib/git-credentials';
 import { deleteS3Prefix } from '../lib/s3-client';
 import { assertProjectOwnership } from '../projects/project.service'; // concrete file, not the barrel — see §0.5
 import { deploymentEngine } from './deployment-engine';
@@ -161,20 +162,21 @@ async function createDeploymentInternal(
 ): Promise<PublicDeployment> {
   const project = await assertProjectOwnership(projectId, userId);
 
-  // SECURITY — deliberately not resolving an actual access token here, same
-  // reasoning as before the GitHub App migration: BullMQ job data is
-  // written verbatim into Redis and kept around for up to 500 completed /
-  // 1,000 failed jobs (see lib/queue.ts) — nothing bearer-credential-shaped
-  // belongs in it. This only checks that project.installationId exists;
-  // build.worker.ts mints a fresh, short-lived installation access token
-  // itself, immediately before the docker run call that needs it
-  // (see lib/github-app.ts's getInstallationAccessToken), and that token is
-  // never written back into the job.
+  // SECURITY — deliberately not writing an actual access token into the job
+  // below: BullMQ job data is written verbatim into Redis and kept around
+  // for up to 500 completed / 1,000 failed jobs (see lib/queue.ts) —
+  // nothing bearer-credential-shaped belongs in it. This just fails fast,
+  // with a clear error, if a private-repo deploy is requested with no PAT
+  // configured at all — build.worker.ts decrypts the PAT itself
+  // (lib/git-credentials.ts), immediately before the docker run call that
+  // needs it, and it's never written back into the job. See
+  // docs/architecture/local-engine-auth-and-networking.md Decision 2.
   if (project.isPrivate) {
-    if (!project.installationId) {
+    const gitAccessToken = await getSingleOperatorGitAccessToken();
+    if (!gitAccessToken) {
       throw new BadRequestError(
-        'Connect this project to a GitHub App installation before deploying a private repository',
-        'GITHUB_APP_NOT_CONNECTED'
+        'Set a git Personal Access Token in Settings before deploying a private repository',
+        'GIT_TOKEN_NOT_CONFIGURED'
       );
     }
   }
@@ -246,12 +248,9 @@ async function createDeploymentInternal(
         deploymentId: deployment.id,
         projectSlug: project.slug,
         projectId,
-        // NEW — the worker mints a fresh installation access token itself
-        // (see build.worker.ts) using installationId + isPrivate; no secret
-        // travels through the job payload. installationId is just a number,
-        // not a credential, so — unlike a token — it's fine sitting in
-        // Redis job history. See the SECURITY comment above.
-        installationId: project.installationId,
+        // The worker decrypts the operator's PAT itself (see
+        // build.worker.ts) using isPrivate alone; no secret travels through
+        // the job payload. See the SECURITY comment above.
         isPrivate: project.isPrivate,
         repoUrl: project.repoUrl,
         branch,
@@ -345,7 +344,6 @@ export async function reconcileOrphanedQueuedDeployments(): Promise<void> {
           deploymentId: deployment.id,
           projectSlug: project.slug,
           projectId: project.id,
-          installationId: project.installationId,
           isPrivate: project.isPrivate,
           repoUrl: project.repoUrl,
           branch: deployment.branch ?? project.defaultBranch,

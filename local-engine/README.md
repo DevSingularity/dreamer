@@ -8,9 +8,13 @@ path anywhere in this directory. This isn't "AWS optional" — it's
 fully independent of it.
 
 This README is the complete setup guide: what you need before you
-start, the one-command install, the one thing that install can't
-automate for you (a GitHub App), how to verify it worked, and how to
-operate it day to day.
+start, the one-command install, how the network is deliberately
+locked down (Decision 4 in the architecture doc), how to verify it
+worked, and how to operate it day to day. There's no external
+account to create anywhere in this guide — no GitHub App, no email
+provider — see
+[`docs/architecture/local-engine-auth-and-networking.md`](docs/architecture/local-engine-auth-and-networking.md)
+for why.
 
 ---
 
@@ -20,9 +24,9 @@ operate it day to day.
 2. [Prerequisites](#2-prerequisites)
 3. [Quick start](#3-quick-start)
 4. [What `install.sh` actually does](#4-what-installsh-actually-does)
-5. [Create a GitHub App](#5-create-a-github-app)
-6. [Create a Resend account](#6-create-a-resend-account)
-7. [Finish activating the API server](#7-finish-activating-the-api-server)
+5. [Reaching the dashboard (it's not public)](#5-reaching-the-dashboard-its-not-public)
+6. [Set your git Personal Access Token](#6-set-your-git-personal-access-token)
+7. [Optional: push-to-deploy on `git push`](#7-optional-push-to-deploy-on-git-push)
 8. [Verify the install](#8-verify-the-install)
 9. [Manual setup (without `install.sh`)](#9-manual-setup-without-installsh)
 10. [Day-2 operations](#10-day-2-operations)
@@ -35,17 +39,22 @@ operate it day to day.
 
 Nine containers, all on one box:
 
-| Service | What it does |
-|---|---|
-| `nginx` | TLS termination + the only container that publishes a port to the internet |
-| `frontend` | The dashboard (Next.js) |
-| `api-server` | REST API + realtime gateway. Owns the Docker build/run engine. |
-| `build-worker` | Dequeues build jobs, launches `build-engine` containers |
-| `build-engine` | *Not* a long-running service — launched fresh per build, exits when done |
-| `reverse-proxy` | Routes every deployed app's traffic to MinIO or to its container |
-| `postgres` | Every Project, Deployment, User row |
-| `redis` | Build-log pub/sub + a 30s routing cache |
-| `minio` | S3-compatible storage for static deployment output |
+| Service | What it does | Reachable from |
+|---|---|---|
+| `nginx` | TLS termination for deployed apps + custom domains | The internet, `*.yourdomain.com` only |
+| `frontend` | The dashboard (Next.js) | `127.0.0.1:3000` on the VPS only |
+| `api-server` | REST API + realtime gateway. Owns the Docker build/run engine. | `127.0.0.1:8000` on the VPS only (plus `/api/webhooks/github`, publicly, only if you turn on push-to-deploy) |
+| `build-worker` | Dequeues build jobs, launches `build-engine` containers | Nothing external |
+| `build-engine` | *Not* a long-running service — launched fresh per build, exits when done | Nothing external |
+| `reverse-proxy` | Routes every deployed app's traffic to MinIO or to its container | Nothing external (nginx proxies to it) |
+| `postgres` | Every Project, Deployment, User row | Nothing external |
+| `redis` | Build-log pub/sub + a 30s routing cache | Nothing external |
+| `minio` | S3-compatible storage for static deployment output | Nothing external |
+
+The dashboard being loopback-only, not public, is deliberate — see
+Section 5 and
+[`docs/architecture/local-engine-auth-and-networking.md`](docs/architecture/local-engine-auth-and-networking.md)
+Decision 4.
 
 ---
 
@@ -57,7 +66,9 @@ Nine containers, all on one box:
   run continuously; each build and each running dynamic app adds to
   that on top.
 - **A domain you control**, with access to its DNS. You'll point
-  `yourdomain.com` and `*.yourdomain.com` at the VPS's IP.
+  *only* `*.yourdomain.com` (the wildcard) at the VPS's IP — the bare
+  apex is left alone, so an existing site there (Vercel, Netlify,
+  whatever) keeps working untouched.
 - **Ports 80 and 443 open** to the internet on that VPS. Check your
   cloud provider's firewall/security-group rules, not just the OS
   firewall (this trips people up more often than the OS side does).
@@ -66,7 +77,8 @@ Nine containers, all on one box:
   Section 4). Without it, you'll do one interactive step during
   install.
 
-**TLDR;** Everything runs on your box.
+**TLDR;** Everything runs on your box. No GitHub App, no email
+provider account — nothing external to sign up for.
 
 ---
 
@@ -75,15 +87,14 @@ Nine containers, all on one box:
 ```bash
 git clone https://github.com/SamanPandey-in/dreamer.git
 cd dreamer/local-engine
-sudo ./install.sh --domain deploy.yourdomain.com --cloudflare-token YOUR_CF_TOKEN
+sudo ./install.sh --domain yourdomain.com --cloudflare-token YOUR_CF_TOKEN
 ```
 
 No Cloudflare token? Drop the flag — `install.sh` falls back to an
 interactive certificate flow (it'll pause and show you a DNS TXT
-record to create by hand). Either way, when it finishes you'll have a
-running stack with one thing left to fill in: a GitHub App (Section
-5) and a Resend API key (Section 6) — both require an account only
-you can create, so no script can do this part for you.
+record to create by hand). Either way, when it finishes the whole
+stack is up and ready to deploy — no external account left to set
+up. Continue to Section 5 to actually reach the dashboard.
 
 ---
 
@@ -100,15 +111,15 @@ blindly:
    they already exist, specifically so re-running `install.sh` never
    silently rotates `JWT_ACCESS_SECRET` or `ENCRYPTION_KEY` out from
    under a running instance (that would log everyone out and make
-   every already-stored GitHub token undecryptable). Delete a
-   specific file yourself first if you genuinely want it regenerated.
-3. **Obtains a wildcard TLS certificate** for `yourdomain.com` *and*
-   `*.yourdomain.com` in one certificate (a plain wildcard cert
-   doesn't cover the bare apex domain, and the dashboard lives on the
-   apex) — necessarily via DNS-01, since HTTP-01 challenges can't
-   prove ownership of a wildcard at all. With `--cloudflare-token`
-   this is fully unattended; without one, certbot runs interactively
-   and waits for you to create a TXT record it shows you.
+   the stored git PAT undecryptable). Delete a specific file yourself
+   first if you genuinely want it regenerated.
+3. **Obtains a wildcard-only TLS certificate** for `*.yourdomain.com`
+   — necessarily via DNS-01, since HTTP-01 challenges can't prove
+   ownership of a wildcard at all, and deliberately NOT including the
+   bare apex (nothing on this box serves it — see Section 1). With
+   `--cloudflare-token` this is fully unattended; without one,
+   certbot runs interactively and waits for you to create a TXT
+   record it shows you.
 4. **Builds the `build-engine` image** (`dreamer-build-engine:local`).
    This is deliberately not a long-running compose service — it's
    launched on demand, per build.
@@ -118,113 +129,93 @@ blindly:
 7. **Installs a daily cron job** (`/etc/cron.d/...`) that runs
    `scripts/renew-certs.sh` — a no-op on most days; certbot only
    actually renews within 30 days of expiry.
-8. **Prints a summary**: your dashboard/API URLs, a reminder to point
-   DNS at the box if you haven't, and a reminder that `api-server`
-   will crash-loop until you complete Sections 5 and 6 below.
+8. **Prints a summary**: how to reach the dashboard (an SSH tunnel
+   command, ready to copy-paste) and a reminder that the git PAT and
+   push-to-deploy webhook are both optional, in-app, next steps —
+   Sections 6 and 7.
 
 ---
 
-## 5. Create a GitHub App
+## 5. Reaching the dashboard (it's not public)
 
-This is the one piece `install.sh` can't do for you — it needs an
-account and a manual creation step on GitHub's side. Everything below
-maps directly to fields the app validates at boot
-(`api-server/src/lib/env.ts`) — if one of these is wrong or missing,
-`api-server` will refuse to start and tell you exactly which field.
-
-1. Go to **github.com/settings/apps/new** (for a personal account) or
-   your organization's equivalent.
-2. **GitHub App name**: anything unique on GitHub — this becomes part
-   of your install URL.
-3. **Homepage URL**: `https://yourdomain.com` (your dashboard).
-4. **Callback URL**: `https://api.yourdomain.com/api/github-app/callback`
-   — check **"Request user authorization (OAuth) during
-   installation."**
-5. **Webhook** → Active: checked.
-   **Webhook URL**: `https://api.yourdomain.com/api/webhooks/github`
-   **Webhook secret**: generate one yourself (`openssl rand -hex 32`)
-   and keep it — you'll paste the same value into both GitHub's form
-   and `api-server/.env`'s `GITHUB_APP_WEBHOOK_SECRET`.
-6. **Permissions** — Repository permissions:
-   - **Contents: Read-only** (needed to clone a repo)
-   - **Metadata: Read-only** (GitHub requires this on every App; it's
-     pre-selected)
-
-   Account permissions:
-   - **Email addresses: Read-only** (login reads the user's verified
-     primary email through this permission — GitHub Apps don't use
-     classic OAuth scopes, so this checkbox is what stands in for one)
-7. **Subscribe to events** — check exactly these three:
-   - `push`
-   - `installation`
-   - `installation_repositories`
-
-   (These are the only three events the webhook handler processes;
-   subscribing to others is harmless but pointless.)
-8. **Where can this GitHub App be installed?** — "Any account" if you
-   want other people to be able to install it on their own repos too;
-   "Only on this account" if it's just for you.
-9. Click **Create GitHub App**.
-
-After creation, on the App's settings page:
-
-- **App ID** (top of the page) → `GITHUB_APP_ID`
-- **Client ID** → `GITHUB_APP_CLIENT_ID`
-- **Client secret** → click "Generate a new client secret" →
-  `GITHUB_APP_CLIENT_SECRET`
-- The app's slug — the part of the URL after `github.com/apps/` →
-  `GITHUB_APP_SLUG`
-- **Private key** → "Generate a private key" downloads a `.pem` file.
-  Open it and paste the *entire* contents (including the
-  `-----BEGIN/END-----` lines) as `GITHUB_APP_PRIVATE_KEY`. If your
-  `.env` loader can't store real newlines cleanly, literal `\n`
-  sequences are fine — `lib/github-app.ts` normalizes them back.
-- The webhook secret you generated in step 5 → `GITHUB_APP_WEBHOOK_SECRET`
-
-Put all six values into `api-server/.env` (see Section 7).
-
----
-
-## 6. Create a Resend account
-
-Email verification and password-reset links are mandatory parts of
-the sign-up flow — `api-server` won't boot without a working
-`RESEND_API_KEY`, by design (`env.ts` fails fast on a missing required
-var rather than silently dropping every verification email at
-runtime).
-
-1. Sign up at **resend.com**.
-2. Add and verify a sending domain (Resend walks you through the DNS
-   records — SPF/DKIM — you add at your DNS provider). This can be
-   the same domain you're already using, or a subdomain of it.
-3. Create an API key → paste it as `RESEND_API_KEY` in
-   `api-server/.env`.
-4. Set `EMAIL_FROM` to an address on your verified domain, e.g.
-   `Dreamer <dreamer@yourdomain.com>` — `install.sh` already filled
-   this in with a sensible default; only change it if you verified a
-   different domain than the one you installed under.
-
----
-
-## 7. Finish activating the API server
+The dashboard has no public hostname at all — see
+[`docs/architecture/local-engine-auth-and-networking.md`](docs/architecture/local-engine-auth-and-networking.md)
+Decision 4 for why. From your own machine:
 
 ```bash
-cd local-engine
-$EDITOR api-server/.env
+ssh -L 3000:localhost:3000 -L 8000:localhost:8000 root@your-vps-ip
 ```
 
-Fill in the six `GITHUB_APP_*` fields (Section 5) and `RESEND_API_KEY`
-(Section 6) — every other field was already generated by `install.sh`.
-Then:
+Leave that running, then open **http://localhost:3000** in your own
+browser. The first thing you'll see is the one-time setup screen —
+name, email, password — this creates the single admin account
+(`POST /api/auth/setup`), and only ever works once: reload the page
+after and you'll get the normal login screen instead.
 
-```bash
-docker compose --env-file .env.deploy restart api-server build-worker
-docker compose --env-file .env.deploy logs -f api-server
-```
+Want the dashboard reachable without an SSH tunnel every time (a
+Tailscale/VPN address, or you've decided the stricter default isn't
+worth it for your setup)? That's a deliberate deviation from what
+this repo ships by default — see the architecture doc's note under
+Decision 4 for the trade-off, then add your own `nginx` server block
+or docker-compose port binding for it.
 
-You should see it start cleanly with no "Invalid environment
-variables" error. If you do see that error, it names the exact field
-that's missing or malformed — fix it and restart again.
+---
+
+## 6. Set your git Personal Access Token
+
+Optional, and only needed to deploy **private** repos — public repos
+clone and deploy with no token at all.
+
+1. GitHub → Settings → Developer settings → Personal access tokens →
+   **Fine-grained tokens** (or classic, either works) → Generate new
+   token.
+2. Scope: **Contents: Read-only** is enough (plus **Metadata:
+   Read-only**, which fine-grained tokens require automatically). If
+   you also want [push-to-deploy](#7-optional-push-to-deploy-on-git-push)
+   to auto-register its webhook for you later, add **Webhooks:
+   Read and write** too — otherwise you'll add the webhook by hand in
+   Section 7, which needs no extra scope.
+3. In the dashboard: **Settings → Git** → paste the token → Save. It's
+   encrypted at rest (AES-256-GCM) the same way env vars are.
+
+That's it — no separate "connect your GitHub account" step, no App
+installation. The wizard's repo picker and the build worker both use
+this one token from here on.
+
+---
+
+## 7. Optional: push-to-deploy on `git push`
+
+Off by default — manual **Redeploy** from the dashboard always works
+regardless of this section. Turn this on only if you want a push to
+automatically trigger a build.
+
+1. Generate a shared secret: `openssl rand -hex 32`.
+2. Add it to `api-server/.env`:
+   ```
+   GITHUB_WEBHOOK_SECRET=<the value you just generated>
+   ENABLE_PUSH_DEPLOY=true
+   API_PUBLIC_URL=https://hooks.yourdomain.com
+   ```
+3. Add the matching line to `.env.deploy` (read by `docker-compose.yml`
+   directly, not by the app):
+   ```
+   ENABLE_PUSH_DEPLOY=true
+   ```
+4. Restart the containers that need to pick this up:
+   ```bash
+   docker compose --env-file .env.deploy up -d nginx api-server build-worker
+   ```
+5. On the repo itself — GitHub → Settings → Webhooks → Add webhook:
+   - Payload URL: `https://hooks.yourdomain.com/api/webhooks/github`
+   - Content type: `application/json`
+   - Secret: the same value from step 1
+   - Events: just **Pushes**
+
+`hooks.yourdomain.com` is covered by the wildcard cert you already
+have (`*.yourdomain.com`) — nothing extra to issue. See
+[`docs/architecture/local-engine-auth-and-networking.md`](docs/architecture/local-engine-auth-and-networking.md)
+Decision 3 & 4 for exactly what this does and doesn't expose.
 
 ---
 
@@ -237,15 +228,12 @@ docker compose --env-file .env.deploy ps
 All nine services should show `Up` (or `Up (healthy)` for the three
 with healthchecks: postgres, redis, minio).
 
-- Visit `https://yourdomain.com` — the dashboard should load over a
-  valid certificate.
-- Sign up with email/password — you should receive a verification
-  email (confirms Resend is wired correctly).
-- "Continue with GitHub" on the login page — should redirect to
-  GitHub and back cleanly (confirms the GitHub App's OAuth callback
-  is correct).
-- Connect a repository and deploy it. For a static site, once
-  `RUNNING`, check the object landed in MinIO:
+- With the SSH tunnel from Section 5 open, visit
+  `http://localhost:3000` — the setup screen (first run) or login
+  screen should load.
+- Log in, connect a repository (Section 6 first, if it's private),
+  and deploy it. For a static site, once `RUNNING`, check the object
+  landed in MinIO:
   ```bash
   docker compose --env-file .env.deploy exec minio \
     mc ls local/dreamer-outputs/__outputs/<your-project-slug>/
@@ -254,11 +242,37 @@ with healthchecks: postgres, redis, minio).
   ```bash
   docker ps --filter "name=dreamer-app-"
   ```
-  and that `https://<project-slug>.yourdomain.com` actually renders.
+  and that `https://<project-slug>.yourdomain.com` actually renders
+  — publicly, over the internet, with no tunnel needed (this is the
+  one thing that's SUPPOSED to be public — see Section 1).
 
 If everything above works, the install is genuinely done — this is
 the real end-to-end verification, not just "the containers are
 running."
+
+Two specific things worth watching closely on this first real run, if
+you're setting this up right after the auth/git-PAT migration
+([`docs/architecture/local-engine-auth-and-networking.md`](docs/architecture/local-engine-auth-and-networking.md)):
+that code was type-checked end to end but never actually executed
+against a live Postgres/Docker daemon before now.
+
+- **The setup wizard actually round-trips.** Submitting it should log
+  you straight into `/dashboard` with no error — if it doesn't,
+  `docker compose --env-file .env.deploy logs api-server` around the
+  `POST /api/auth/setup` call is the first place to look.
+- **A private-repo build actually authenticates with the PAT.** Set a
+  token (Section 6), deploy a private repo, and confirm the build
+  clones successfully rather than failing on a 404/403 partway
+  through — that's `getSingleOperatorGitAccessToken()`
+  (`lib/git-credentials.ts`) actually reaching the build container
+  correctly, not just type-checking correctly.
+
+Neither is expected to fail — the logic mirrors the login flow's
+existing, previously-working session code and the PAT-as-clone-
+credential pattern is about as standard as it gets — but "type-checks
+clean" and "actually works against a real Postgres and a real GitHub
+API call" are different guarantees, and this is the first time this
+code has faced the second one.
 
 ---
 
@@ -343,17 +357,18 @@ docker run --rm -v <this-repo>/local-engine_minio_data:/data -v "$(pwd)":/backup
 
 **Rotate a secret** (e.g. you suspect `ENCRYPTION_KEY` leaked): edit
 `api-server/.env` directly, restart `api-server`/`build-worker`.
-Rotating `ENCRYPTION_KEY` specifically makes every previously-stored
-GitHub token undecryptable — users will need to reconnect GitHub.
+Rotating `ENCRYPTION_KEY` specifically makes the stored git PAT
+undecryptable — you'll need to re-enter it in Settings.
 
 ---
 
 ## 11. Troubleshooting
 
-**`api-server` crash-loops with "Invalid environment variables"**
-Expected right after a fresh `install.sh` run, before you've done
-Sections 5–7 — the error names the exact missing field. Fix
-`api-server/.env` and restart.
+**`api-server` won't accept connections from your browser**
+Confirm your SSH tunnel is actually up (`ssh -L 3000:localhost:3000
+-L 8000:localhost:8000 ...`, Section 5) and that you're opening
+`http://localhost:3000`, not a public hostname — there isn't one for
+the dashboard by design.
 
 **TLS issuance fails / times out**
 Almost always DNS: the certbot DNS-01 challenge needs your domain's
@@ -362,17 +377,26 @@ you need to have correctly created the TXT record it showed you (for
 the manual flow) *before* pressing Enter, and given it a minute to
 propagate.
 
-**Dashboard loads but GitHub login redirects to an error**
-Check the GitHub App's **Callback URL** matches `API_PUBLIC_URL`
-exactly (`https://api.yourdomain.com/api/github-app/callback`) — a
-trailing slash or `http` vs `https` mismatch is the usual culprit.
+**Forgot the admin password**
+No email-based reset (see Decision 1) — reset it directly from the server:
+```bash
+docker compose --env-file .env.deploy exec api-server \
+  npx tsx scripts/reset-admin-password.ts your-new-password
+```
+This also signs out every existing session for the account, same as a
+normal in-app password change does.
+
+**"Set a git Personal Access Token in Settings" when deploying a private repo**
+Expected — see Section 6. Public repos need no token at all.
 
 **A push to GitHub doesn't trigger a redeploy**
-Check **Webhook → Recent Deliveries** on the GitHub App's settings
-page — a non-2xx response there tells you exactly what
-`api-server` rejected it for (usually a webhook-secret mismatch,
-meaning `GITHUB_APP_WEBHOOK_SECRET` doesn't match what you entered on
-GitHub's side).
+First check `ENABLE_PUSH_DEPLOY=true` is actually set in both
+`api-server/.env` AND `.env.deploy` (nginx reads the latter) and that
+you restarted `nginx`/`api-server`/`build-worker` after setting it —
+see Section 7. Then check **Webhook → Recent Deliveries** on the
+repo's own webhook settings page — a non-2xx response there tells you
+exactly what was rejected (usually a secret mismatch between
+`GITHUB_WEBHOOK_SECRET` and what you pasted into GitHub's form).
 
 **A deploy is stuck in `BUILDING` forever**
 ```bash

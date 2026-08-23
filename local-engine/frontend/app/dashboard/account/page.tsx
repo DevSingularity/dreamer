@@ -8,13 +8,10 @@ import type { AuthSession } from "@/lib/auth";
 import { SessionRow } from "@/components/dashboard/SessionRow";
 import { describeApiError, getErrorRequestId } from "@/lib/dashboard-api";
 import { useAuth } from "@/app/providers";
-import { ConnectGithubPrompt } from "@/components/ConnectGithubPrompt";
-import { useGithubConnectStatus } from "@/lib/useGithubConnectStatus";
-import { GithubIcon } from "@/components/icons";
+import { GitTokenPrompt } from "@/components/GitTokenPrompt";
 
 function AccountPageContent() {
-  const { user } = useAuth();
-  const githubStatus = useGithubConnectStatus();
+  const { user, refreshUser } = useAuth();
 
   const [sessions, setSessions] = useState<AuthSession[] | null>(null);
   const [sessionsError, setSessionsError] = useState<string | null>(null);
@@ -71,29 +68,14 @@ function AccountPageContent() {
     <div className="max-w-2xl flex flex-col gap-6">
       <h1 className="text-2xl font-bold tracking-tight">Account</h1>
 
-      {githubStatus && (
-        <Alert variant={githubStatus.variant}>{githubStatus.message}</Alert>
-      )}
-
       <div className="bg-zinc-950/80 rounded-2xl border border-zinc-800 p-5 flex flex-col gap-4">
-        <h2 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider">GitHub</h2>
+        <h2 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider">Git</h2>
 
-        {user?.githubUsername ? (
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center shrink-0">
-              <GithubIcon className="w-[18px] h-[18px] text-zinc-300" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-zinc-100">Connected</p>
-              <p className="text-xs text-zinc-500">@{user.githubUsername}</p>
-            </div>
-          </div>
-        ) : (
-          <ConnectGithubPrompt
-            returnTo="account"
-            description="Link your GitHub account to import and deploy your repositories."
-          />
-        )}
+        <GitTokenPrompt
+          hasToken={user?.hasGitToken ?? false}
+          onChange={refreshUser}
+          description="Used to list and clone your repos, including private ones. Public repos work fine with no token set."
+        />
       </div>
 
       <form
@@ -104,8 +86,7 @@ function AccountPageContent() {
 
         <div>
           <label htmlFor="current-password" className="block text-xs font-medium text-zinc-400 mb-1.5">
-            Current Password{" "}
-            <span className="text-zinc-600">(leave blank if you signed up with GitHub and never set one)</span>
+            Current Password
           </label>
           <input
             id="current-password"

@@ -64,15 +64,13 @@ export interface BuildJob {
   branch: string;
   /** Set only by rollbackDeployment. Pins the build to this exact commit instead of the branch's current HEAD; see clone-repo.js's runCheckoutIfPinned. */
   commitHash?: string;
-  // SECURITY — deliberately NOT the decrypted token. This is BullMQ job
-  // data, persisted verbatim in Redis for up to 500 completed / 1,000
-  // failed jobs (see lib/queue.ts). installationId is just a GitHub App
-  // installation ID — not a credential — so unlike a token it's fine
-  // sitting in job history; build.worker.ts mints a fresh, short-lived
-  // installation access token from it right before the launchBuildTask
-  // call that needs it — see launchBuildTask's own gitAccessToken
-  // parameter below, which is never written back into job.data.
-  installationId: number | null;
+  // local-engine — see docs/architecture/local-engine-auth-and-networking.md
+  // Decision 2. No installationId anymore: there's one operator-wide PAT,
+  // not a per-project link. `isPrivate` is all this job needs to know —
+  // build.worker.ts decrypts the PAT itself (lib/git-credentials.ts) right
+  // before the launchBuildTask call that needs it, same "never persisted
+  // into BullMQ job data" property the old installationId comment
+  // described, just with one less indirection.
   isPrivate: boolean;
   // Resolved build config from the Project row (see project.service.ts
   // and build-config/). null on any field means "build-engine should fall

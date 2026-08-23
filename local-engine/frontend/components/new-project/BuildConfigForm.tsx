@@ -75,7 +75,6 @@ function OverridableField({
 }
 
 export function BuildConfigForm({
-  installationId,
   repoFullName,
   repoName,
   branch,
@@ -83,9 +82,6 @@ export function BuildConfigForm({
   onContinue,
   onBack,
 }: {
-  // null for a repo picked via public search — detectBuildConfig falls
-  // back to the caller's OAuth token or an unauthenticated call.
-  installationId: number | null;
   repoFullName: string;
   repoName: string;
   branch: string;
@@ -118,7 +114,7 @@ export function BuildConfigForm({
     if (hasLoaded.current) return;
     hasLoaded.current = true;
 
-    Promise.all([listFrameworkPresets(), detectBuildConfig(installationId, repoFullName, branch, rootDirectory)])
+    Promise.all([listFrameworkPresets(), detectBuildConfig(repoFullName, branch, rootDirectory)])
       .then(([fetchedPresets, detectedConfig]) => {
         setPresets(fetchedPresets);
         setDetected(detectedConfig);

@@ -15,14 +15,11 @@ export const createProjectSchema = z.object({
   body: z.object({
     name: z.string().min(1).max(255).trim(),
     repoUrl: z.url().max(2048),
-    // NEW — which installation + which repo within it, as returned by
+    // NEW — the repo's stable GitHub numeric ID, as returned by
     // GET /api/github/repos (see integrations/github-repo.controller.ts).
-    // Both optional at the schema level (a project can theoretically be
-    // created without linking a repo at all — e.g. a placeholder project a
-    // user fills in later), but see project.service.ts's createProject:
-    // whenever installationId IS given, ownership is verified server-side
-    // before it's trusted for anything.
-    installationId: z.number().int().positive().optional(),
+    // Optional — a project can be created without it (e.g. a repo typed by
+    // hand, or a placeholder filled in later); it's the sole webhook lookup
+    // key when present (webhooks/github-webhook.service.ts's findProjectsForPush).
     repositoryId: z.number().int().positive().optional(),
     // Defaults to 'main' in the service layer, not here — keeping the
     // "what's the actual default" logic in one place (project.service.ts)
@@ -61,13 +58,7 @@ export const updateProjectSchema = z.object({
     outputDirectory: z.string().max(255).trim().optional(),
     rootDirectory: z.string().max(255).trim().optional(),
     autoDeployEnabled: z.boolean().optional(),
-    // NEW — relinking a project to a (re-)installed App/repo from the
-    // Settings page, when the original installation was suspended/removed
-    // or the project predates the App migration. Ownership of
-    // installationId is re-verified in project.service.ts exactly like
-    // createProject does — this is a write path, so the same trust rule
-    // applies.
-    installationId: z.number().int().positive().optional(),
+    // Relinking a project to a different repo's numeric ID from Settings.
     repositoryId: z.number().int().positive().optional(),
   }),
 });
@@ -101,13 +92,9 @@ export interface PublicProject {
   detectedFramework: Framework | null;
   detectedDeploymentType: DeploymentType | null;
   autoDeployEnabled: boolean;
-  // NEW — whether a push can actually trigger a deploy right now: the
-  // project has a linked installation + repo AND that installation isn't
-  // suspended. See project.service.ts's toPublicProject for the exact
-  // derivation (this replaces the old per-repo-webhook `webhookConnected`
-  // field from before the GitHub App migration).
+  // Whether a push can actually trigger a deploy right now: the project
+  // has a linked repositoryId. See project.service.ts's toPublicProject.
   autoDeployReady: boolean;
-  installationId: number | null;
   repositoryId: number | null;
   createdAt: Date;
 }

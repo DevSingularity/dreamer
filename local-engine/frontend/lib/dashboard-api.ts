@@ -1,5 +1,4 @@
 import { apiFetch } from "./api-client";
-import { API_BASE_URL } from "./config";
 import { ApiError, extractRequestId } from "./api-error";
 export { ApiError, describeApiError, getErrorRequestId } from "./api-error";
 import type {
@@ -11,7 +10,6 @@ import type {
   EnvVariable,
   EnvironmentTarget,
   FrameworkPresetId, // NEW
-  GithubInstallation, // NEW
   GithubRepoSummary, // NEW
   LogLine,
   MetricsRange, // NEW
@@ -42,10 +40,9 @@ export async function listProjects(): Promise<ProjectWithLatestDeployment[]> {
 export interface CreateProjectInput {
   name: string;
   repoUrl: string;
-  // NEW — from the repo picker (see GithubRepoSummary). Both required in
-  // practice: the wizard's "pick-repo" step always resolves a real repo
-  // from an installation before advancing.
-  installationId?: number;
+  // From the repo picker (see GithubRepoSummary). See
+  // docs/architecture/local-engine-auth-and-networking.md Decision 2 —
+  // no installationId anymore, just the repo's numeric ID.
   repositoryId?: number;
   defaultBranch?: string;
   description?: string;
@@ -85,8 +82,7 @@ export interface UpdateProjectInput {
   outputDirectory?: string;
   rootDirectory?: string;
   autoDeployEnabled?: boolean;
-  // NEW — relinking a project to a (re-)installed App/repo from Settings.
-  installationId?: number;
+  // Relinking a project to a different repo's numeric ID from Settings.
   repositoryId?: number;
 }
 
@@ -108,41 +104,24 @@ export async function deleteProject(projectId: string): Promise<void> {
   }
 }
 
-// New-project wizard — GitHub App
+// New-project wizard — GitHub repo access via a stored Personal Access
+// Token. See docs/architecture/local-engine-auth-and-networking.md
+// Decision 2. Setting/clearing the token itself lives in lib/auth.ts
+// (Settings > Git) — everything here is read-only browsing of repos the
+// token can already see.
 
-/**
- * The browser navigates here directly (a link/button, not a fetch call) to
- * grant Dreamer repo access via the GitHub App — distinct from
- * connectGithub() below, which links a GitHub IDENTITY to an existing
- * account. Both go through the same underlying GitHub App now (one
- * consent screen, one set of credentials — see
- * docs/deployments/github-app-migration.md), just for different purposes:
- * this one is specifically for granting/adding repo access.
- */
-export const GITHUB_APP_INSTALL_URL = `${API_BASE_URL}/api/github-app/install`;
-
-/** Every GitHub account/org the caller has installed the Dreamer GitHub App on — shown as a picker above the repo list whenever there's more than one. */
-export async function listGithubInstallations(): Promise<GithubInstallation[]> {
-  const res = await apiFetch("/api/github/installations");
-  const data = await parseJson<{ installations: GithubInstallation[] }>(res);
-  return data.installations;
-}
-
-/** Lists repos visible to one installation — the wizard's "Import Git Repository" step (1). Auto-deploy works for anything picked from here. */
-export async function listGithubRepos(installationId: number): Promise<GithubRepoSummary[]> {
-  const params = new URLSearchParams({ installationId: String(installationId) });
-  const res = await apiFetch(`/api/github/repos?${params}`);
+/** Every repo the operator's stored PAT can see — the wizard's "Import Git Repository" step (1). Empty if no PAT is set yet (see lib/auth.ts's setGitToken). */
+export async function listGithubRepos(): Promise<GithubRepoSummary[]> {
+  const res = await apiFetch("/api/github/repos");
   const data = await parseJson<{ repos: GithubRepoSummary[] }>(res);
   return data.repos;
 }
 
 /**
- * Searches ANY public GitHub repo by name — independent of any installation
- * (see the API's github-repo.service.ts searchPublicRepos doc comment).
- * Every result has `installationId: null`: auto-deploy won't work for a
- * project created from one until the App is separately installed on it,
- * but manual deploy/redeploy works immediately since a public repo needs no
- * credentials to clone.
+ * Searches ANY public GitHub repo by name — works even with no PAT set at
+ * all (see the API's github-repo.service.ts searchPublicRepos doc
+ * comment). Useful for a repo the operator doesn't own/collaborate on, so
+ * it wouldn't show up in listGithubRepos.
  */
 export async function searchPublicRepos(query: string): Promise<GithubRepoSummary[]> {
   const params = new URLSearchParams({ query });
@@ -155,18 +134,10 @@ export async function searchPublicRepos(query: string): Promise<GithubRepoSummar
  * Lists one directory level of a GitHub repo — used by the wizard's
  * root-directory picker, called once per expanded folder rather than
  * recursively, mirroring how the API's listRepoDirectory itself only
- * fetches one level at a time. installationId is null for a repo found via
- * public search — the API falls back to the caller's OAuth token (or an
- * unauthenticated call) in that case.
+ * fetches one level at a time.
  */
-export async function listGithubRepoContents(
-  installationId: number | null,
-  repoFullName: string,
-  branch: string,
-  path = ""
-): Promise<RepoEntry[]> {
+export async function listGithubRepoContents(repoFullName: string, branch: string, path = ""): Promise<RepoEntry[]> {
   const params = new URLSearchParams({ repoFullName, branch, path });
-  if (installationId !== null) params.set("installationId", String(installationId));
   const res = await apiFetch(`/api/github/repo-contents?${params}`);
   const data = await parseJson<{ entries: RepoEntry[] }>(res);
   return data.entries;
@@ -175,16 +146,9 @@ export async function listGithubRepoContents(
 /**
  * Lists a repo's branches, default branch flagged — shared by the wizard's
  * branch picker and the project-settings "Production Branch" dropdown.
- * installationId is null for a repo found via public search — same
- * fallback as listGithubRepoContents above.
  */
-export async function listRepoBranches(
-  installationId: number | null,
-  repoFullName: string,
-  defaultBranch: string
-): Promise<RepoBranch[]> {
+export async function listRepoBranches(repoFullName: string, defaultBranch: string): Promise<RepoBranch[]> {
   const params = new URLSearchParams({ repoFullName, defaultBranch });
-  if (installationId !== null) params.set("installationId", String(installationId));
   const res = await apiFetch(`/api/github/branches?${params}`);
   const data = await parseJson<{ branches: RepoBranch[] }>(res);
   return data.branches;
@@ -210,16 +174,11 @@ export async function listFrameworkPresets(): Promise<PublicFrameworkPreset[]> {
  * wizard. See build-config.service.ts on the API for what this actually
  * inspects (config files, package.json dependencies, lockfiles).
  */
-export async function detectBuildConfig(
-  installationId: number | null,
-  repoFullName: string,
-  branch: string,
-  rootDirectory: string
-): Promise<DetectedBuildConfig> {
+export async function detectBuildConfig(repoFullName: string, branch: string, rootDirectory: string): Promise<DetectedBuildConfig> {
   const res = await apiFetch("/api/build-config/detect", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ installationId: installationId ?? undefined, repoFullName, branch, rootDirectory }),
+    body: JSON.stringify({ repoFullName, branch, rootDirectory }),
   });
   const data = await parseJson<{ detected: DetectedBuildConfig }>(res);
   return data.detected;

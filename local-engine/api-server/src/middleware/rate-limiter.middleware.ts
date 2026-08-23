@@ -18,7 +18,10 @@ function createRateLimiter(windowMinutes: number, max: number) {
 // refreshed a few times), not just by an abuse script. Values below are
 // roughly 3x the old ones; still bounded, just less trigger-happy.
 export const loginRateLimiter = createRateLimiter(15, 30); // 30 attempts / 15 min / IP
-export const registerRateLimiter = createRateLimiter(60, 15); // 15 signups / hour / IP
+// local-engine: only ever fires successfully once (see auth.service.ts's
+// setupAdmin) — this limiter just blunts a script hammering the endpoint
+// after it's already 409ing.
+export const setupRateLimiter = createRateLimiter(60, 15);
 export const refreshRateLimiter = createRateLimiter(15, 90); // refresh fires often — give it room
 
 //  NEW — reveal returns a real plaintext secret, not just a yes/no. Raised
@@ -27,11 +30,3 @@ export const refreshRateLimiter = createRateLimiter(15, 90); // refresh fires of
 // enough to blunt a scripted "reveal everything on this project" sweep run
 // against a stolen session.
 export const revealEnvVariableRateLimiter = createRateLimiter(15, 60);
-
-// NEW — both of these send an email and both intentionally return an
-// identical response whether or not the account exists (see auth.service.ts),
-// so rate limiting is the only real defense against someone using them to
-// spam an arbitrary inbox. Raised from 3 to 8/hour — still tighter than
-// login/register on purpose, just less likely to block a legitimate retry.
-export const resendVerificationRateLimiter = createRateLimiter(60, 8); // 8 / hour / IP
-export const forgotPasswordRateLimiter = createRateLimiter(60, 8); // 8 / hour / IP

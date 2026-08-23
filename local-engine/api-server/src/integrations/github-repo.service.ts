@@ -53,27 +53,43 @@ function githubHeaders(accessToken?: string): HeadersInit {
 }
 
 /**
- * Searches GitHub's public repositories — backs the wizard's "any other
- * publicly available GitHub repo" search, which sits ALONGSIDE (not instead
- * of) the GitHub App installation-based repo list. These are deliberately
- * two different, complementary paths:
- *
- *  - Installation-based repos (lib/github-app.ts's listInstallationRepos):
- *    the App has push-webhook access, so auto-deploy on push works.
- *  - Public search results (this function): read-only, unauthenticated-or-
- *    lightly-authenticated access is all a PUBLIC repo clone ever needed in
- *    the first place — no installation covers it, so the project this
- *    creates simply won't have a working webhook (autoDeployReady: false
- *    until/unless someone installs the App on it too). Manual "Redeploy"
- *    still works fine: build-engine's clone-repo.js doesn't need a token
- *    for a public HTTPS clone.
- *
- * `accessToken` is optional and best-effort — if the caller has one (their
- * OAuth login token, or the user just happens to have a GitHub App
- * installation already), search runs at the authenticated 5,000/hr rate
- * limit instead of the unauthenticated 60/hr limit. Neither is required:
- * this is intentionally the one GitHub-repo feature that works for a user
- * who has connected NOTHING yet.
+ * Lists every repo the operator's PAT can see — `GET /user/repos`,
+ * authenticated, covering both public and private repos in one call. This
+ * is local-engine's entire "Import Git Repository" list (see
+ * docs/architecture/local-engine-auth-and-networking.md Decision 2) —
+ * replaces the old per-installation repo listing entirely; there's one
+ * token, and whatever it can see is the whole list.
+ */
+export async function listOwnRepos(accessToken: string): Promise<GithubSearchRepoEntry[]> {
+  const PER_PAGE = 100;
+  const res = await fetch(
+    `${GITHUB_API_BASE}/user/repos?per_page=${PER_PAGE}&sort=updated&affiliation=owner,collaborator,organization_member`,
+    { headers: githubHeaders(accessToken) }
+  );
+
+  if (!res.ok) {
+    throw new BadRequestError('Could not list repositories for this GitHub account — check that your Personal Access Token is still valid', 'GITHUB_LIST_REPOS_FAILED');
+  }
+
+  const data = (await res.json()) as GithubSearchApiEntry[];
+
+  return data.map((repo) => ({
+    repositoryId: repo.id,
+    fullName: repo.full_name,
+    name: repo.name,
+    defaultBranch: repo.default_branch,
+    isPrivate: repo.private,
+    updatedAt: repo.updated_at,
+  }));
+}
+
+/**
+ * Searches GitHub's public repositories by name — the wizard's "any public
+ * GitHub repo" search, useful when browsing a repo the operator's own PAT
+ * doesn't own or collaborate on (so it wouldn't show up in listOwnRepos).
+ * Deliberately works with NO token at all, same as before — GitHub's
+ * search endpoint just rate-limits unauthenticated calls harder (60/hr vs.
+ * 5,000/hr with a token attached).
  */
 export async function searchPublicRepos(accessToken: string | undefined, query: string): Promise<GithubSearchRepoEntry[]> {
   const PER_PAGE = 20;

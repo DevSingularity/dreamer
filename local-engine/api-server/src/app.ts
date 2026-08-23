@@ -7,7 +7,7 @@ import { buildConfigRouter } from './build-config';
 import { deploymentsRouter } from './deployments';
 import { envVariablesRouter } from './env-variables';
 import { customDomainsRouter } from './domains'; // NEW
-import { githubRepoRouter, githubAppInstallRouter } from './integrations';
+import { githubRepoRouter } from './integrations';
 import { githubWebhookRouter } from './webhooks';
 import { errorHandlerMiddleware } from './middleware/error-handler.middleware';
 import { requestContextMiddleware } from './middleware/request-context.middleware';
@@ -125,18 +125,16 @@ app.use(cookieParser());
 
 app.use('/api/auth', authRouter);
 
-// NEW — auto-deploy on push. Public: GitHub calls this, not a logged-in
-// user, so it's mounted OUTSIDE every requireAuth block below. Signature
-// verification (see webhooks/github-webhook.controller.ts) is this route's
-// auth.
+// Auto-deploy on push — OFF by default at the network layer (see
+// docs/architecture/local-engine-auth-and-networking.md Decision 4: nginx
+// doesn't route ANY public hostname to api-server unless
+// ENABLE_PUSH_DEPLOY=true is set, in which case only this one path is
+// exposed). Mounted here regardless of that flag — this app-level mount
+// point has no way to know how nginx is configured, and doesn't need to:
+// GitHub calls this, not a logged-in user, so it's public at the Express
+// level the same way it always was; signature verification (see
+// webhooks/github-webhook.controller.ts) is this route's auth either way.
 app.use('/api/webhooks/github', githubWebhookRouter);
-
-// NEW — GitHub App installation flow. Also public — see
-// integrations/github-app-install.controller.ts's doc comments for why
-// requireAuth can't apply to a plain browser redirect/callback; both
-// handlers resolve identity from the refresh-token cookie / a signed state
-// token instead.
-app.use('/api/github-app', githubAppInstallRouter);
 
 // Everything under /api/projects and /api/deployments etc. requires a logged-in
 // user — unlike /api/auth (where /register, /login, /github are

@@ -4,7 +4,6 @@ import crypto from 'node:crypto';
 import { prisma } from '../lib/prisma';
 import { env } from '../lib/env';
 import type { AccessTokenPayload } from './auth.types';
-import type { VerificationTokenType } from '../generated/prisma/client';
 
 const REFRESH_SECRET_BYTES = 64;
 const BCRYPT_SALT_ROUNDS = 12; // matches the cost factor documented on User.passwordHash in schema.prisma
@@ -24,80 +23,6 @@ export function signAccessToken(userId: string, email: string): string {
 
 export function verifyAccessToken(token: string): AccessTokenPayload {
   return jwt.verify(token, env.JWT_ACCESS_SECRET) as AccessTokenPayload;
-}
-
-// GitHub App state — one shared, signed `state` param for every entry point
-// that sends the browser to GitHub's install+authorize screen
-// (`/api/auth/github`, `/api/auth/github/connect`, `/api/github-app/install`).
-//
-// A single GitHub App now handles login/signup, account-linking, AND repo
-// installation (see docs/deployments/github-app-unified-auth.md) — all three
-// land on the same callback, so `state` carries which of the three this
-// particular redirect was for (`intent`), plus whatever that intent needs
-// to resolve identity on the way back:
-//   - login:   no prior identity — the callback creates/finds the user from
-//              the OAuth code itself. Only `nonce` needed (CSRF pairing
-//              with the cookie set alongside it).
-//   - connect: an already-logged-in user linking GitHub to their existing
-//              account — `sub` (userId) has to survive the redirect since
-//              the access token lives in frontend memory, never reaching
-//              this backend across GitHub's own redirect.
-//   - install: an already-logged-in user adding another installation
-//              (e.g. an org) without re-authorizing identity — also needs
-//              `sub` to know whose GithubInstallation row to upsert.
-// Every case still gets the same cookie-vs-param equality check in the
-// callback (CSRF protection); the signature here is a second, independent
-// check on top of that, and is what makes `sub` tamper-proof.
-
-// Shared across every entry point that sends the browser to GitHub (see
-// auth.controller.ts's githubRedirectHandler/githubConnectRedirectHandler
-// and integrations/github-app-install.controller.ts's install redirect) —
-// all three set this exact cookie name/path, since all three land back on
-// the one shared callback below and the callback only knows one path/name
-// to read.
-export const GITHUB_STATE_COOKIE_NAME = 'github_flow_state';
-export const GITHUB_CALLBACK_PATH = '/api/github-app/callback';
-
-export type GithubFlowIntent = 'login' | 'connect' | 'install';
-
-interface GithubFlowStatePayload {
-  purpose: 'github_flow';
-  intent: GithubFlowIntent;
-  sub?: string; // userId — present for 'connect' and 'install', absent for 'login'
-  returnTo?: string; // relative frontend path to redirect back to
-  nonce: string;
-}
-
-const GITHUB_FLOW_STATE_TTL = '10m'; // matches the OAuth state cookie's own maxAge
-
-export function signGithubFlowState(params: { intent: GithubFlowIntent; userId?: string; returnTo?: string }): string {
-  const payload: GithubFlowStatePayload = {
-    purpose: 'github_flow',
-    intent: params.intent,
-    sub: params.userId,
-    returnTo: params.returnTo,
-    nonce: crypto.randomBytes(16).toString('hex'),
-  };
-  return jwt.sign(payload, env.JWT_ACCESS_SECRET, { expiresIn: GITHUB_FLOW_STATE_TTL, algorithm: 'HS256' });
-}
-
-/**
- * Returns the decoded state, or null for ANY failure — expired, wrong
- * purpose, or garbage input. Unlike the old two-state-schemes design, ALL
- * three intents are signed JWTs now, so there's no more "falls through to
- * login" case to special-case here — the caller always gets a real intent
- * or a clean null.
- */
-export function verifyGithubFlowState(
-  state: string
-): { intent: GithubFlowIntent; userId?: string; returnTo?: string } | null {
-  try {
-    const payload = jwt.verify(state, env.JWT_ACCESS_SECRET) as GithubFlowStatePayload;
-    if (payload.purpose !== 'github_flow') return null;
-    return { intent: payload.intent, userId: payload.sub, returnTo: payload.returnTo };
-  } catch {
-    return null;
-  }
 }
 
 // Password hashing
@@ -206,10 +131,9 @@ export async function rotateSession(rawToken: string, meta: SessionMeta) {
  * active-user check) but WITHOUT rotating anything — no delete, no new
  * session row, no new refresh token. For callers that only need to know
  * "who is this cookie's owner" on a plain GET they can't protect with a
- * CSRF token (e.g. github-app-install.controller.ts's install redirect),
- * where minting a fresh session as a side effect of a forgeable
- * cross-site request is itself the vulnerability. Returns null for ANY
- * failure, same as rotateSession, for the same generic-401 reason.
+ * CSRF token, where minting a fresh session as a side effect of a
+ * forgeable cross-site request is itself the vulnerability. Returns null
+ * for ANY failure, same as rotateSession, for the same generic-401 reason.
  */
 export async function verifySessionUser(rawToken: string) {
   const unpacked = unpackRefreshToken(rawToken);
@@ -256,69 +180,4 @@ export async function listSessionsForUser(userId: string) {
 export async function revokeSessionById(userId: string, sessionId: string): Promise<boolean> {
   const result = await prisma.userSession.deleteMany({ where: { id: sessionId, userId } });
   return result.count > 0;
-}
-
-// ── Verification tokens (email-verify / password-reset) ────────────────────
-//
-// Exact same raw-token-vs-hash shape as refresh tokens above: the raw token
-// handed to the client (embedded in the email link) is `${id}.${secret}`,
-// only bcrypt(secret) is ever persisted. Reusing this pattern instead of
-// storing a plain random token means a DB read alone can never be replayed
-// as a valid token — the same property refresh tokens already have.
-
-const VERIFICATION_SECRET_BYTES = 32;
-
-export const EMAIL_VERIFY_TTL_MS = 24 * 60 * 60 * 1000; // 24h
-export const PASSWORD_RESET_TTL_MS = 60 * 60 * 1000; // 1h
-
-/**
- * Creates a new verification/reset token row and returns the raw token to
- * embed in the email link. Any previous unconsumed token of the same type
- * for this user is invalidated first, so clicking an old email link never
- * works alongside a freshly requested one.
- */
-export async function createVerificationToken(
-  userId: string,
-  type: VerificationTokenType,
-  ttlMs: number
-): Promise<string> {
-  const secret = crypto.randomBytes(VERIFICATION_SECRET_BYTES).toString('hex');
-  const tokenHash = await bcrypt.hash(secret, BCRYPT_SALT_ROUNDS);
-  const expiresAt = new Date(Date.now() + ttlMs);
-
-  await prisma.verificationToken.deleteMany({ where: { userId, type, consumedAt: null } });
-  const token = await prisma.verificationToken.create({ data: { userId, type, tokenHash, expiresAt } });
-
-  // packRefreshToken is a generic "${id}.${secret}" packer despite the name
-  // (shared with refresh-token creation above) — reused here rather than
-  // duplicated.
-  return packRefreshToken(token.id, secret);
-}
-
-/**
- * Validates a raw verification/reset token, marks it consumed (single-use),
- * and returns the userId it belongs to — or null for ANY failure (expired,
- * already used, garbage input, wrong type). Callers should surface a single
- * generic error either way, same reasoning as rotateSession() above.
- */
-export async function consumeVerificationToken(
-  rawToken: string,
-  type: VerificationTokenType
-): Promise<string | null> {
-  const unpacked = unpackRefreshToken(rawToken);
-  if (!unpacked) return null;
-  const { sessionId: tokenId, secret } = unpacked; // generic id.secret packer, reused from refresh tokens
-
-  const token = await prisma.verificationToken.findUnique({ where: { id: tokenId } });
-  if (!token || token.type !== type || token.consumedAt || token.expiresAt < new Date()) return null;
-
-  const isValid = await bcrypt.compare(secret, token.tokenHash);
-  if (!isValid) return null;
-
-  await prisma.verificationToken.update({
-    where: { id: token.id },
-    data: { consumedAt: new Date() },
-  });
-
-  return token.userId;
 }

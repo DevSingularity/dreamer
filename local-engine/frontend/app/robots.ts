@@ -6,7 +6,7 @@ import { SITE_URL } from "@/lib/site";
 // anyway) or a pure API surface. None of it has SEO value, and indexing
 // /project/:id pages specifically would leak project names/slugs into
 // search results for what are effectively private dashboards.
-const DISALLOWED_PATHS = ["/dashboard", "/dashboard/", "/project/", "/api/", "/auth/callback"];
+const DISALLOWED_PATHS = ["/dashboard", "/dashboard/", "/project/", "/api/", "/setup"];
 
 export default function robots(): MetadataRoute.Robots {
   return {
