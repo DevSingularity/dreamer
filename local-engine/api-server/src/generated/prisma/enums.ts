@@ -79,11 +79,3 @@ export const EnvironmentTarget = {
 } as const
 
 export type EnvironmentTarget = (typeof EnvironmentTarget)[keyof typeof EnvironmentTarget]
-
-
-export const VerificationTokenType = {
-  EMAIL_VERIFY: 'EMAIL_VERIFY',
-  PASSWORD_RESET: 'PASSWORD_RESET'
-} as const
-
-export type VerificationTokenType = (typeof VerificationTokenType)[keyof typeof VerificationTokenType]

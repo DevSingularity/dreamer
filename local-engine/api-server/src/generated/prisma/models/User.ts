@@ -20,18 +20,8 @@ export type UserModel = runtime.Types.Result.DefaultSelection<Prisma.$UserPayloa
 
 export type AggregateUser = {
   _count: UserCountAggregateOutputType | null
-  _avg: UserAvgAggregateOutputType | null
-  _sum: UserSumAggregateOutputType | null
   _min: UserMinAggregateOutputType | null
   _max: UserMaxAggregateOutputType | null
-}
-
-export type UserAvgAggregateOutputType = {
-  githubId: number | null
-}
-
-export type UserSumAggregateOutputType = {
-  githubId: number | null
 }
 
 export type UserMinAggregateOutputType = {
@@ -40,11 +30,8 @@ export type UserMinAggregateOutputType = {
   passwordHash: string | null
   name: string | null
   avatarUrl: string | null
-  githubId: number | null
-  githubUsername: string | null
-  githubToken: string | null
+  personalAccessToken: string | null
   refreshTokenHash: string | null
-  emailVerified: boolean | null
   isActive: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -57,11 +44,8 @@ export type UserMaxAggregateOutputType = {
   passwordHash: string | null
   name: string | null
   avatarUrl: string | null
-  githubId: number | null
-  githubUsername: string | null
-  githubToken: string | null
+  personalAccessToken: string | null
   refreshTokenHash: string | null
-  emailVerified: boolean | null
   isActive: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -74,11 +58,8 @@ export type UserCountAggregateOutputType = {
   passwordHash: number
   name: number
   avatarUrl: number
-  githubId: number
-  githubUsername: number
-  githubToken: number
+  personalAccessToken: number
   refreshTokenHash: number
-  emailVerified: number
   isActive: number
   createdAt: number
   updatedAt: number
@@ -87,25 +68,14 @@ export type UserCountAggregateOutputType = {
 }
 
 
-export type UserAvgAggregateInputType = {
-  githubId?: true
-}
-
-export type UserSumAggregateInputType = {
-  githubId?: true
-}
-
 export type UserMinAggregateInputType = {
   id?: true
   email?: true
   passwordHash?: true
   name?: true
   avatarUrl?: true
-  githubId?: true
-  githubUsername?: true
-  githubToken?: true
+  personalAccessToken?: true
   refreshTokenHash?: true
-  emailVerified?: true
   isActive?: true
   createdAt?: true
   updatedAt?: true
@@ -118,11 +88,8 @@ export type UserMaxAggregateInputType = {
   passwordHash?: true
   name?: true
   avatarUrl?: true
-  githubId?: true
-  githubUsername?: true
-  githubToken?: true
+  personalAccessToken?: true
   refreshTokenHash?: true
-  emailVerified?: true
   isActive?: true
   createdAt?: true
   updatedAt?: true
@@ -135,11 +102,8 @@ export type UserCountAggregateInputType = {
   passwordHash?: true
   name?: true
   avatarUrl?: true
-  githubId?: true
-  githubUsername?: true
-  githubToken?: true
+  personalAccessToken?: true
   refreshTokenHash?: true
-  emailVerified?: true
   isActive?: true
   createdAt?: true
   updatedAt?: true
@@ -185,18 +149,6 @@ export type UserAggregateArgs<ExtArgs extends runtime.Types.Extensions.InternalA
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
-   * Select which fields to average
-  **/
-  _avg?: UserAvgAggregateInputType
-  /**
-   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-   * 
-   * Select which fields to sum
-  **/
-  _sum?: UserSumAggregateInputType
-  /**
-   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-   * 
    * Select which fields to find the minimum value
   **/
   _min?: UserMinAggregateInputType
@@ -227,8 +179,6 @@ export type UserGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
   take?: number
   skip?: number
   _count?: UserCountAggregateInputType | true
-  _avg?: UserAvgAggregateInputType
-  _sum?: UserSumAggregateInputType
   _min?: UserMinAggregateInputType
   _max?: UserMaxAggregateInputType
 }
@@ -236,21 +186,16 @@ export type UserGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
 export type UserGroupByOutputType = {
   id: string
   email: string
-  passwordHash: string | null
+  passwordHash: string
   name: string
   avatarUrl: string | null
-  githubId: number | null
-  githubUsername: string | null
-  githubToken: string | null
+  personalAccessToken: string | null
   refreshTokenHash: string | null
-  emailVerified: boolean
   isActive: boolean
   createdAt: Date
   updatedAt: Date
   lastLoginAt: Date | null
   _count: UserCountAggregateOutputType | null
-  _avg: UserAvgAggregateOutputType | null
-  _sum: UserSumAggregateOutputType | null
   _min: UserMinAggregateOutputType | null
   _max: UserMaxAggregateOutputType | null
 }
@@ -276,14 +221,11 @@ export type UserWhereInput = {
   NOT?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
   id?: Prisma.UuidFilter<"User"> | string
   email?: Prisma.StringFilter<"User"> | string
-  passwordHash?: Prisma.StringNullableFilter<"User"> | string | null
+  passwordHash?: Prisma.StringFilter<"User"> | string
   name?: Prisma.StringFilter<"User"> | string
   avatarUrl?: Prisma.StringNullableFilter<"User"> | string | null
-  githubId?: Prisma.IntNullableFilter<"User"> | number | null
-  githubUsername?: Prisma.StringNullableFilter<"User"> | string | null
-  githubToken?: Prisma.StringNullableFilter<"User"> | string | null
+  personalAccessToken?: Prisma.StringNullableFilter<"User"> | string | null
   refreshTokenHash?: Prisma.StringNullableFilter<"User"> | string | null
-  emailVerified?: Prisma.BoolFilter<"User"> | boolean
   isActive?: Prisma.BoolFilter<"User"> | boolean
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
@@ -292,21 +234,16 @@ export type UserWhereInput = {
   sessions?: Prisma.UserSessionListRelationFilter
   auditLogs?: Prisma.AuditLogListRelationFilter
   deploymentsTriggered?: Prisma.DeploymentListRelationFilter
-  verificationTokens?: Prisma.VerificationTokenListRelationFilter
-  githubInstallations?: Prisma.GithubInstallationListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   email?: Prisma.SortOrder
-  passwordHash?: Prisma.SortOrderInput | Prisma.SortOrder
+  passwordHash?: Prisma.SortOrder
   name?: Prisma.SortOrder
   avatarUrl?: Prisma.SortOrderInput | Prisma.SortOrder
-  githubId?: Prisma.SortOrderInput | Prisma.SortOrder
-  githubUsername?: Prisma.SortOrderInput | Prisma.SortOrder
-  githubToken?: Prisma.SortOrderInput | Prisma.SortOrder
+  personalAccessToken?: Prisma.SortOrderInput | Prisma.SortOrder
   refreshTokenHash?: Prisma.SortOrderInput | Prisma.SortOrder
-  emailVerified?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -315,24 +252,19 @@ export type UserOrderByWithRelationInput = {
   sessions?: Prisma.UserSessionOrderByRelationAggregateInput
   auditLogs?: Prisma.AuditLogOrderByRelationAggregateInput
   deploymentsTriggered?: Prisma.DeploymentOrderByRelationAggregateInput
-  verificationTokens?: Prisma.VerificationTokenOrderByRelationAggregateInput
-  githubInstallations?: Prisma.GithubInstallationOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
   id?: string
   email?: string
-  githubId?: number
   AND?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
   OR?: Prisma.UserWhereInput[]
   NOT?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
-  passwordHash?: Prisma.StringNullableFilter<"User"> | string | null
+  passwordHash?: Prisma.StringFilter<"User"> | string
   name?: Prisma.StringFilter<"User"> | string
   avatarUrl?: Prisma.StringNullableFilter<"User"> | string | null
-  githubUsername?: Prisma.StringNullableFilter<"User"> | string | null
-  githubToken?: Prisma.StringNullableFilter<"User"> | string | null
+  personalAccessToken?: Prisma.StringNullableFilter<"User"> | string | null
   refreshTokenHash?: Prisma.StringNullableFilter<"User"> | string | null
-  emailVerified?: Prisma.BoolFilter<"User"> | boolean
   isActive?: Prisma.BoolFilter<"User"> | boolean
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
@@ -341,30 +273,23 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   sessions?: Prisma.UserSessionListRelationFilter
   auditLogs?: Prisma.AuditLogListRelationFilter
   deploymentsTriggered?: Prisma.DeploymentListRelationFilter
-  verificationTokens?: Prisma.VerificationTokenListRelationFilter
-  githubInstallations?: Prisma.GithubInstallationListRelationFilter
-}, "id" | "email" | "githubId">
+}, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   email?: Prisma.SortOrder
-  passwordHash?: Prisma.SortOrderInput | Prisma.SortOrder
+  passwordHash?: Prisma.SortOrder
   name?: Prisma.SortOrder
   avatarUrl?: Prisma.SortOrderInput | Prisma.SortOrder
-  githubId?: Prisma.SortOrderInput | Prisma.SortOrder
-  githubUsername?: Prisma.SortOrderInput | Prisma.SortOrder
-  githubToken?: Prisma.SortOrderInput | Prisma.SortOrder
+  personalAccessToken?: Prisma.SortOrderInput | Prisma.SortOrder
   refreshTokenHash?: Prisma.SortOrderInput | Prisma.SortOrder
-  emailVerified?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   lastLoginAt?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
-  _avg?: Prisma.UserAvgOrderByAggregateInput
   _max?: Prisma.UserMaxOrderByAggregateInput
   _min?: Prisma.UserMinOrderByAggregateInput
-  _sum?: Prisma.UserSumOrderByAggregateInput
 }
 
 export type UserScalarWhereWithAggregatesInput = {
@@ -373,14 +298,11 @@ export type UserScalarWhereWithAggregatesInput = {
   NOT?: Prisma.UserScalarWhereWithAggregatesInput | Prisma.UserScalarWhereWithAggregatesInput[]
   id?: Prisma.UuidWithAggregatesFilter<"User"> | string
   email?: Prisma.StringWithAggregatesFilter<"User"> | string
-  passwordHash?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  passwordHash?: Prisma.StringWithAggregatesFilter<"User"> | string
   name?: Prisma.StringWithAggregatesFilter<"User"> | string
   avatarUrl?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
-  githubId?: Prisma.IntNullableWithAggregatesFilter<"User"> | number | null
-  githubUsername?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
-  githubToken?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  personalAccessToken?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   refreshTokenHash?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
-  emailVerified?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
   isActive?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
@@ -390,14 +312,11 @@ export type UserScalarWhereWithAggregatesInput = {
 export type UserCreateInput = {
   id?: string
   email: string
-  passwordHash?: string | null
+  passwordHash: string
   name: string
   avatarUrl?: string | null
-  githubId?: number | null
-  githubUsername?: string | null
-  githubToken?: string | null
+  personalAccessToken?: string | null
   refreshTokenHash?: string | null
-  emailVerified?: boolean
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -406,21 +325,16 @@ export type UserCreateInput = {
   sessions?: Prisma.UserSessionCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput
   deploymentsTriggered?: Prisma.DeploymentCreateNestedManyWithoutDeployedByInput
-  verificationTokens?: Prisma.VerificationTokenCreateNestedManyWithoutUserInput
-  githubInstallations?: Prisma.GithubInstallationCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
   id?: string
   email: string
-  passwordHash?: string | null
+  passwordHash: string
   name: string
   avatarUrl?: string | null
-  githubId?: number | null
-  githubUsername?: string | null
-  githubToken?: string | null
+  personalAccessToken?: string | null
   refreshTokenHash?: string | null
-  emailVerified?: boolean
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -429,21 +343,16 @@ export type UserUncheckedCreateInput = {
   sessions?: Prisma.UserSessionUncheckedCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput
   deploymentsTriggered?: Prisma.DeploymentUncheckedCreateNestedManyWithoutDeployedByInput
-  verificationTokens?: Prisma.VerificationTokenUncheckedCreateNestedManyWithoutUserInput
-  githubInstallations?: Prisma.GithubInstallationUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  githubId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  githubUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  githubToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  personalAccessToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   refreshTokenHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -452,21 +361,16 @@ export type UserUpdateInput = {
   sessions?: Prisma.UserSessionUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput
   deploymentsTriggered?: Prisma.DeploymentUpdateManyWithoutDeployedByNestedInput
-  verificationTokens?: Prisma.VerificationTokenUpdateManyWithoutUserNestedInput
-  githubInstallations?: Prisma.GithubInstallationUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  githubId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  githubUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  githubToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  personalAccessToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   refreshTokenHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -475,21 +379,16 @@ export type UserUncheckedUpdateInput = {
   sessions?: Prisma.UserSessionUncheckedUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput
   deploymentsTriggered?: Prisma.DeploymentUncheckedUpdateManyWithoutDeployedByNestedInput
-  verificationTokens?: Prisma.VerificationTokenUncheckedUpdateManyWithoutUserNestedInput
-  githubInstallations?: Prisma.GithubInstallationUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
   id?: string
   email: string
-  passwordHash?: string | null
+  passwordHash: string
   name: string
   avatarUrl?: string | null
-  githubId?: number | null
-  githubUsername?: string | null
-  githubToken?: string | null
+  personalAccessToken?: string | null
   refreshTokenHash?: string | null
-  emailVerified?: boolean
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -499,14 +398,11 @@ export type UserCreateManyInput = {
 export type UserUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  githubId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  githubUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  githubToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  personalAccessToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   refreshTokenHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -516,14 +412,11 @@ export type UserUpdateManyMutationInput = {
 export type UserUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  githubId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  githubUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  githubToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  personalAccessToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   refreshTokenHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -536,19 +429,12 @@ export type UserCountOrderByAggregateInput = {
   passwordHash?: Prisma.SortOrder
   name?: Prisma.SortOrder
   avatarUrl?: Prisma.SortOrder
-  githubId?: Prisma.SortOrder
-  githubUsername?: Prisma.SortOrder
-  githubToken?: Prisma.SortOrder
+  personalAccessToken?: Prisma.SortOrder
   refreshTokenHash?: Prisma.SortOrder
-  emailVerified?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   lastLoginAt?: Prisma.SortOrder
-}
-
-export type UserAvgOrderByAggregateInput = {
-  githubId?: Prisma.SortOrder
 }
 
 export type UserMaxOrderByAggregateInput = {
@@ -557,11 +443,8 @@ export type UserMaxOrderByAggregateInput = {
   passwordHash?: Prisma.SortOrder
   name?: Prisma.SortOrder
   avatarUrl?: Prisma.SortOrder
-  githubId?: Prisma.SortOrder
-  githubUsername?: Prisma.SortOrder
-  githubToken?: Prisma.SortOrder
+  personalAccessToken?: Prisma.SortOrder
   refreshTokenHash?: Prisma.SortOrder
-  emailVerified?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -574,19 +457,12 @@ export type UserMinOrderByAggregateInput = {
   passwordHash?: Prisma.SortOrder
   name?: Prisma.SortOrder
   avatarUrl?: Prisma.SortOrder
-  githubId?: Prisma.SortOrder
-  githubUsername?: Prisma.SortOrder
-  githubToken?: Prisma.SortOrder
+  personalAccessToken?: Prisma.SortOrder
   refreshTokenHash?: Prisma.SortOrder
-  emailVerified?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   lastLoginAt?: Prisma.SortOrder
-}
-
-export type UserSumOrderByAggregateInput = {
-  githubId?: Prisma.SortOrder
 }
 
 export type UserScalarRelationFilter = {
@@ -607,14 +483,6 @@ export type NullableStringFieldUpdateOperationsInput = {
   set?: string | null
 }
 
-export type NullableIntFieldUpdateOperationsInput = {
-  set?: number | null
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
-}
-
 export type BoolFieldUpdateOperationsInput = {
   set?: boolean
 }
@@ -625,20 +493,6 @@ export type DateTimeFieldUpdateOperationsInput = {
 
 export type NullableDateTimeFieldUpdateOperationsInput = {
   set?: Date | string | null
-}
-
-export type UserCreateNestedOneWithoutVerificationTokensInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutVerificationTokensInput, Prisma.UserUncheckedCreateWithoutVerificationTokensInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutVerificationTokensInput
-  connect?: Prisma.UserWhereUniqueInput
-}
-
-export type UserUpdateOneRequiredWithoutVerificationTokensNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutVerificationTokensInput, Prisma.UserUncheckedCreateWithoutVerificationTokensInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutVerificationTokensInput
-  upsert?: Prisma.UserUpsertWithoutVerificationTokensInput
-  connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutVerificationTokensInput, Prisma.UserUpdateWithoutVerificationTokensInput>, Prisma.UserUncheckedUpdateWithoutVerificationTokensInput>
 }
 
 export type UserCreateNestedOneWithoutSessionsInput = {
@@ -653,20 +507,6 @@ export type UserUpdateOneRequiredWithoutSessionsNestedInput = {
   upsert?: Prisma.UserUpsertWithoutSessionsInput
   connect?: Prisma.UserWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutSessionsInput, Prisma.UserUpdateWithoutSessionsInput>, Prisma.UserUncheckedUpdateWithoutSessionsInput>
-}
-
-export type UserCreateNestedOneWithoutGithubInstallationsInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutGithubInstallationsInput, Prisma.UserUncheckedCreateWithoutGithubInstallationsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutGithubInstallationsInput
-  connect?: Prisma.UserWhereUniqueInput
-}
-
-export type UserUpdateOneRequiredWithoutGithubInstallationsNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutGithubInstallationsInput, Prisma.UserUncheckedCreateWithoutGithubInstallationsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutGithubInstallationsInput
-  upsert?: Prisma.UserUpsertWithoutGithubInstallationsInput
-  connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutGithubInstallationsInput, Prisma.UserUpdateWithoutGithubInstallationsInput>, Prisma.UserUncheckedUpdateWithoutGithubInstallationsInput>
 }
 
 export type UserCreateNestedOneWithoutProjectsInput = {
@@ -715,121 +555,14 @@ export type UserUpdateOneWithoutAuditLogsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutAuditLogsInput, Prisma.UserUpdateWithoutAuditLogsInput>, Prisma.UserUncheckedUpdateWithoutAuditLogsInput>
 }
 
-export type UserCreateWithoutVerificationTokensInput = {
-  id?: string
-  email: string
-  passwordHash?: string | null
-  name: string
-  avatarUrl?: string | null
-  githubId?: number | null
-  githubUsername?: string | null
-  githubToken?: string | null
-  refreshTokenHash?: string | null
-  emailVerified?: boolean
-  isActive?: boolean
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  lastLoginAt?: Date | string | null
-  projects?: Prisma.ProjectCreateNestedManyWithoutUserInput
-  sessions?: Prisma.UserSessionCreateNestedManyWithoutUserInput
-  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput
-  deploymentsTriggered?: Prisma.DeploymentCreateNestedManyWithoutDeployedByInput
-  githubInstallations?: Prisma.GithubInstallationCreateNestedManyWithoutUserInput
-}
-
-export type UserUncheckedCreateWithoutVerificationTokensInput = {
-  id?: string
-  email: string
-  passwordHash?: string | null
-  name: string
-  avatarUrl?: string | null
-  githubId?: number | null
-  githubUsername?: string | null
-  githubToken?: string | null
-  refreshTokenHash?: string | null
-  emailVerified?: boolean
-  isActive?: boolean
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  lastLoginAt?: Date | string | null
-  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutUserInput
-  sessions?: Prisma.UserSessionUncheckedCreateNestedManyWithoutUserInput
-  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput
-  deploymentsTriggered?: Prisma.DeploymentUncheckedCreateNestedManyWithoutDeployedByInput
-  githubInstallations?: Prisma.GithubInstallationUncheckedCreateNestedManyWithoutUserInput
-}
-
-export type UserCreateOrConnectWithoutVerificationTokensInput = {
-  where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutVerificationTokensInput, Prisma.UserUncheckedCreateWithoutVerificationTokensInput>
-}
-
-export type UserUpsertWithoutVerificationTokensInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutVerificationTokensInput, Prisma.UserUncheckedUpdateWithoutVerificationTokensInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutVerificationTokensInput, Prisma.UserUncheckedCreateWithoutVerificationTokensInput>
-  where?: Prisma.UserWhereInput
-}
-
-export type UserUpdateToOneWithWhereWithoutVerificationTokensInput = {
-  where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutVerificationTokensInput, Prisma.UserUncheckedUpdateWithoutVerificationTokensInput>
-}
-
-export type UserUpdateWithoutVerificationTokensInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  githubId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  githubUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  githubToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  refreshTokenHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  projects?: Prisma.ProjectUpdateManyWithoutUserNestedInput
-  sessions?: Prisma.UserSessionUpdateManyWithoutUserNestedInput
-  auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput
-  deploymentsTriggered?: Prisma.DeploymentUpdateManyWithoutDeployedByNestedInput
-  githubInstallations?: Prisma.GithubInstallationUpdateManyWithoutUserNestedInput
-}
-
-export type UserUncheckedUpdateWithoutVerificationTokensInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  githubId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  githubUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  githubToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  refreshTokenHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  projects?: Prisma.ProjectUncheckedUpdateManyWithoutUserNestedInput
-  sessions?: Prisma.UserSessionUncheckedUpdateManyWithoutUserNestedInput
-  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput
-  deploymentsTriggered?: Prisma.DeploymentUncheckedUpdateManyWithoutDeployedByNestedInput
-  githubInstallations?: Prisma.GithubInstallationUncheckedUpdateManyWithoutUserNestedInput
-}
-
 export type UserCreateWithoutSessionsInput = {
   id?: string
   email: string
-  passwordHash?: string | null
+  passwordHash: string
   name: string
   avatarUrl?: string | null
-  githubId?: number | null
-  githubUsername?: string | null
-  githubToken?: string | null
+  personalAccessToken?: string | null
   refreshTokenHash?: string | null
-  emailVerified?: boolean
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -837,21 +570,16 @@ export type UserCreateWithoutSessionsInput = {
   projects?: Prisma.ProjectCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput
   deploymentsTriggered?: Prisma.DeploymentCreateNestedManyWithoutDeployedByInput
-  verificationTokens?: Prisma.VerificationTokenCreateNestedManyWithoutUserInput
-  githubInstallations?: Prisma.GithubInstallationCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutSessionsInput = {
   id?: string
   email: string
-  passwordHash?: string | null
+  passwordHash: string
   name: string
   avatarUrl?: string | null
-  githubId?: number | null
-  githubUsername?: string | null
-  githubToken?: string | null
+  personalAccessToken?: string | null
   refreshTokenHash?: string | null
-  emailVerified?: boolean
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -859,8 +587,6 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput
   deploymentsTriggered?: Prisma.DeploymentUncheckedCreateNestedManyWithoutDeployedByInput
-  verificationTokens?: Prisma.VerificationTokenUncheckedCreateNestedManyWithoutUserInput
-  githubInstallations?: Prisma.GithubInstallationUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutSessionsInput = {
@@ -882,14 +608,11 @@ export type UserUpdateToOneWithWhereWithoutSessionsInput = {
 export type UserUpdateWithoutSessionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  githubId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  githubUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  githubToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  personalAccessToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   refreshTokenHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -897,21 +620,16 @@ export type UserUpdateWithoutSessionsInput = {
   projects?: Prisma.ProjectUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput
   deploymentsTriggered?: Prisma.DeploymentUpdateManyWithoutDeployedByNestedInput
-  verificationTokens?: Prisma.VerificationTokenUpdateManyWithoutUserNestedInput
-  githubInstallations?: Prisma.GithubInstallationUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSessionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  githubId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  githubUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  githubToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  personalAccessToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   refreshTokenHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -919,125 +637,16 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   projects?: Prisma.ProjectUncheckedUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput
   deploymentsTriggered?: Prisma.DeploymentUncheckedUpdateManyWithoutDeployedByNestedInput
-  verificationTokens?: Prisma.VerificationTokenUncheckedUpdateManyWithoutUserNestedInput
-  githubInstallations?: Prisma.GithubInstallationUncheckedUpdateManyWithoutUserNestedInput
-}
-
-export type UserCreateWithoutGithubInstallationsInput = {
-  id?: string
-  email: string
-  passwordHash?: string | null
-  name: string
-  avatarUrl?: string | null
-  githubId?: number | null
-  githubUsername?: string | null
-  githubToken?: string | null
-  refreshTokenHash?: string | null
-  emailVerified?: boolean
-  isActive?: boolean
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  lastLoginAt?: Date | string | null
-  projects?: Prisma.ProjectCreateNestedManyWithoutUserInput
-  sessions?: Prisma.UserSessionCreateNestedManyWithoutUserInput
-  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput
-  deploymentsTriggered?: Prisma.DeploymentCreateNestedManyWithoutDeployedByInput
-  verificationTokens?: Prisma.VerificationTokenCreateNestedManyWithoutUserInput
-}
-
-export type UserUncheckedCreateWithoutGithubInstallationsInput = {
-  id?: string
-  email: string
-  passwordHash?: string | null
-  name: string
-  avatarUrl?: string | null
-  githubId?: number | null
-  githubUsername?: string | null
-  githubToken?: string | null
-  refreshTokenHash?: string | null
-  emailVerified?: boolean
-  isActive?: boolean
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  lastLoginAt?: Date | string | null
-  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutUserInput
-  sessions?: Prisma.UserSessionUncheckedCreateNestedManyWithoutUserInput
-  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput
-  deploymentsTriggered?: Prisma.DeploymentUncheckedCreateNestedManyWithoutDeployedByInput
-  verificationTokens?: Prisma.VerificationTokenUncheckedCreateNestedManyWithoutUserInput
-}
-
-export type UserCreateOrConnectWithoutGithubInstallationsInput = {
-  where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutGithubInstallationsInput, Prisma.UserUncheckedCreateWithoutGithubInstallationsInput>
-}
-
-export type UserUpsertWithoutGithubInstallationsInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutGithubInstallationsInput, Prisma.UserUncheckedUpdateWithoutGithubInstallationsInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutGithubInstallationsInput, Prisma.UserUncheckedCreateWithoutGithubInstallationsInput>
-  where?: Prisma.UserWhereInput
-}
-
-export type UserUpdateToOneWithWhereWithoutGithubInstallationsInput = {
-  where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutGithubInstallationsInput, Prisma.UserUncheckedUpdateWithoutGithubInstallationsInput>
-}
-
-export type UserUpdateWithoutGithubInstallationsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  githubId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  githubUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  githubToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  refreshTokenHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  projects?: Prisma.ProjectUpdateManyWithoutUserNestedInput
-  sessions?: Prisma.UserSessionUpdateManyWithoutUserNestedInput
-  auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput
-  deploymentsTriggered?: Prisma.DeploymentUpdateManyWithoutDeployedByNestedInput
-  verificationTokens?: Prisma.VerificationTokenUpdateManyWithoutUserNestedInput
-}
-
-export type UserUncheckedUpdateWithoutGithubInstallationsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  githubId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  githubUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  githubToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  refreshTokenHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  projects?: Prisma.ProjectUncheckedUpdateManyWithoutUserNestedInput
-  sessions?: Prisma.UserSessionUncheckedUpdateManyWithoutUserNestedInput
-  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput
-  deploymentsTriggered?: Prisma.DeploymentUncheckedUpdateManyWithoutDeployedByNestedInput
-  verificationTokens?: Prisma.VerificationTokenUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutProjectsInput = {
   id?: string
   email: string
-  passwordHash?: string | null
+  passwordHash: string
   name: string
   avatarUrl?: string | null
-  githubId?: number | null
-  githubUsername?: string | null
-  githubToken?: string | null
+  personalAccessToken?: string | null
   refreshTokenHash?: string | null
-  emailVerified?: boolean
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1045,21 +654,16 @@ export type UserCreateWithoutProjectsInput = {
   sessions?: Prisma.UserSessionCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput
   deploymentsTriggered?: Prisma.DeploymentCreateNestedManyWithoutDeployedByInput
-  verificationTokens?: Prisma.VerificationTokenCreateNestedManyWithoutUserInput
-  githubInstallations?: Prisma.GithubInstallationCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutProjectsInput = {
   id?: string
   email: string
-  passwordHash?: string | null
+  passwordHash: string
   name: string
   avatarUrl?: string | null
-  githubId?: number | null
-  githubUsername?: string | null
-  githubToken?: string | null
+  personalAccessToken?: string | null
   refreshTokenHash?: string | null
-  emailVerified?: boolean
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1067,8 +671,6 @@ export type UserUncheckedCreateWithoutProjectsInput = {
   sessions?: Prisma.UserSessionUncheckedCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput
   deploymentsTriggered?: Prisma.DeploymentUncheckedCreateNestedManyWithoutDeployedByInput
-  verificationTokens?: Prisma.VerificationTokenUncheckedCreateNestedManyWithoutUserInput
-  githubInstallations?: Prisma.GithubInstallationUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutProjectsInput = {
@@ -1090,14 +692,11 @@ export type UserUpdateToOneWithWhereWithoutProjectsInput = {
 export type UserUpdateWithoutProjectsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  githubId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  githubUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  githubToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  personalAccessToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   refreshTokenHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1105,21 +704,16 @@ export type UserUpdateWithoutProjectsInput = {
   sessions?: Prisma.UserSessionUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput
   deploymentsTriggered?: Prisma.DeploymentUpdateManyWithoutDeployedByNestedInput
-  verificationTokens?: Prisma.VerificationTokenUpdateManyWithoutUserNestedInput
-  githubInstallations?: Prisma.GithubInstallationUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutProjectsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  githubId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  githubUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  githubToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  personalAccessToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   refreshTokenHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1127,21 +721,16 @@ export type UserUncheckedUpdateWithoutProjectsInput = {
   sessions?: Prisma.UserSessionUncheckedUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput
   deploymentsTriggered?: Prisma.DeploymentUncheckedUpdateManyWithoutDeployedByNestedInput
-  verificationTokens?: Prisma.VerificationTokenUncheckedUpdateManyWithoutUserNestedInput
-  githubInstallations?: Prisma.GithubInstallationUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutDeploymentsTriggeredInput = {
   id?: string
   email: string
-  passwordHash?: string | null
+  passwordHash: string
   name: string
   avatarUrl?: string | null
-  githubId?: number | null
-  githubUsername?: string | null
-  githubToken?: string | null
+  personalAccessToken?: string | null
   refreshTokenHash?: string | null
-  emailVerified?: boolean
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1149,21 +738,16 @@ export type UserCreateWithoutDeploymentsTriggeredInput = {
   projects?: Prisma.ProjectCreateNestedManyWithoutUserInput
   sessions?: Prisma.UserSessionCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput
-  verificationTokens?: Prisma.VerificationTokenCreateNestedManyWithoutUserInput
-  githubInstallations?: Prisma.GithubInstallationCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutDeploymentsTriggeredInput = {
   id?: string
   email: string
-  passwordHash?: string | null
+  passwordHash: string
   name: string
   avatarUrl?: string | null
-  githubId?: number | null
-  githubUsername?: string | null
-  githubToken?: string | null
+  personalAccessToken?: string | null
   refreshTokenHash?: string | null
-  emailVerified?: boolean
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1171,8 +755,6 @@ export type UserUncheckedCreateWithoutDeploymentsTriggeredInput = {
   projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutUserInput
   sessions?: Prisma.UserSessionUncheckedCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput
-  verificationTokens?: Prisma.VerificationTokenUncheckedCreateNestedManyWithoutUserInput
-  githubInstallations?: Prisma.GithubInstallationUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutDeploymentsTriggeredInput = {
@@ -1194,14 +776,11 @@ export type UserUpdateToOneWithWhereWithoutDeploymentsTriggeredInput = {
 export type UserUpdateWithoutDeploymentsTriggeredInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  githubId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  githubUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  githubToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  personalAccessToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   refreshTokenHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1209,21 +788,16 @@ export type UserUpdateWithoutDeploymentsTriggeredInput = {
   projects?: Prisma.ProjectUpdateManyWithoutUserNestedInput
   sessions?: Prisma.UserSessionUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput
-  verificationTokens?: Prisma.VerificationTokenUpdateManyWithoutUserNestedInput
-  githubInstallations?: Prisma.GithubInstallationUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutDeploymentsTriggeredInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  githubId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  githubUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  githubToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  personalAccessToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   refreshTokenHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1231,21 +805,16 @@ export type UserUncheckedUpdateWithoutDeploymentsTriggeredInput = {
   projects?: Prisma.ProjectUncheckedUpdateManyWithoutUserNestedInput
   sessions?: Prisma.UserSessionUncheckedUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput
-  verificationTokens?: Prisma.VerificationTokenUncheckedUpdateManyWithoutUserNestedInput
-  githubInstallations?: Prisma.GithubInstallationUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutAuditLogsInput = {
   id?: string
   email: string
-  passwordHash?: string | null
+  passwordHash: string
   name: string
   avatarUrl?: string | null
-  githubId?: number | null
-  githubUsername?: string | null
-  githubToken?: string | null
+  personalAccessToken?: string | null
   refreshTokenHash?: string | null
-  emailVerified?: boolean
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1253,21 +822,16 @@ export type UserCreateWithoutAuditLogsInput = {
   projects?: Prisma.ProjectCreateNestedManyWithoutUserInput
   sessions?: Prisma.UserSessionCreateNestedManyWithoutUserInput
   deploymentsTriggered?: Prisma.DeploymentCreateNestedManyWithoutDeployedByInput
-  verificationTokens?: Prisma.VerificationTokenCreateNestedManyWithoutUserInput
-  githubInstallations?: Prisma.GithubInstallationCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAuditLogsInput = {
   id?: string
   email: string
-  passwordHash?: string | null
+  passwordHash: string
   name: string
   avatarUrl?: string | null
-  githubId?: number | null
-  githubUsername?: string | null
-  githubToken?: string | null
+  personalAccessToken?: string | null
   refreshTokenHash?: string | null
-  emailVerified?: boolean
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1275,8 +839,6 @@ export type UserUncheckedCreateWithoutAuditLogsInput = {
   projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutUserInput
   sessions?: Prisma.UserSessionUncheckedCreateNestedManyWithoutUserInput
   deploymentsTriggered?: Prisma.DeploymentUncheckedCreateNestedManyWithoutDeployedByInput
-  verificationTokens?: Prisma.VerificationTokenUncheckedCreateNestedManyWithoutUserInput
-  githubInstallations?: Prisma.GithubInstallationUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAuditLogsInput = {
@@ -1298,14 +860,11 @@ export type UserUpdateToOneWithWhereWithoutAuditLogsInput = {
 export type UserUpdateWithoutAuditLogsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  githubId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  githubUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  githubToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  personalAccessToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   refreshTokenHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1313,21 +872,16 @@ export type UserUpdateWithoutAuditLogsInput = {
   projects?: Prisma.ProjectUpdateManyWithoutUserNestedInput
   sessions?: Prisma.UserSessionUpdateManyWithoutUserNestedInput
   deploymentsTriggered?: Prisma.DeploymentUpdateManyWithoutDeployedByNestedInput
-  verificationTokens?: Prisma.VerificationTokenUpdateManyWithoutUserNestedInput
-  githubInstallations?: Prisma.GithubInstallationUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAuditLogsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  githubId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  githubUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  githubToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  personalAccessToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   refreshTokenHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1335,8 +889,6 @@ export type UserUncheckedUpdateWithoutAuditLogsInput = {
   projects?: Prisma.ProjectUncheckedUpdateManyWithoutUserNestedInput
   sessions?: Prisma.UserSessionUncheckedUpdateManyWithoutUserNestedInput
   deploymentsTriggered?: Prisma.DeploymentUncheckedUpdateManyWithoutDeployedByNestedInput
-  verificationTokens?: Prisma.VerificationTokenUncheckedUpdateManyWithoutUserNestedInput
-  githubInstallations?: Prisma.GithubInstallationUncheckedUpdateManyWithoutUserNestedInput
 }
 
 
@@ -1349,8 +901,6 @@ export type UserCountOutputType = {
   sessions: number
   auditLogs: number
   deploymentsTriggered: number
-  verificationTokens: number
-  githubInstallations: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1358,8 +908,6 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   sessions?: boolean | UserCountOutputTypeCountSessionsArgs
   auditLogs?: boolean | UserCountOutputTypeCountAuditLogsArgs
   deploymentsTriggered?: boolean | UserCountOutputTypeCountDeploymentsTriggeredArgs
-  verificationTokens?: boolean | UserCountOutputTypeCountVerificationTokensArgs
-  githubInstallations?: boolean | UserCountOutputTypeCountGithubInstallationsArgs
 }
 
 /**
@@ -1400,20 +948,6 @@ export type UserCountOutputTypeCountDeploymentsTriggeredArgs<ExtArgs extends run
   where?: Prisma.DeploymentWhereInput
 }
 
-/**
- * UserCountOutputType without action
- */
-export type UserCountOutputTypeCountVerificationTokensArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.VerificationTokenWhereInput
-}
-
-/**
- * UserCountOutputType without action
- */
-export type UserCountOutputTypeCountGithubInstallationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.GithubInstallationWhereInput
-}
-
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1421,11 +955,8 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   passwordHash?: boolean
   name?: boolean
   avatarUrl?: boolean
-  githubId?: boolean
-  githubUsername?: boolean
-  githubToken?: boolean
+  personalAccessToken?: boolean
   refreshTokenHash?: boolean
-  emailVerified?: boolean
   isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -1434,8 +965,6 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   sessions?: boolean | Prisma.User$sessionsArgs<ExtArgs>
   auditLogs?: boolean | Prisma.User$auditLogsArgs<ExtArgs>
   deploymentsTriggered?: boolean | Prisma.User$deploymentsTriggeredArgs<ExtArgs>
-  verificationTokens?: boolean | Prisma.User$verificationTokensArgs<ExtArgs>
-  githubInstallations?: boolean | Prisma.User$githubInstallationsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -1445,11 +974,8 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   passwordHash?: boolean
   name?: boolean
   avatarUrl?: boolean
-  githubId?: boolean
-  githubUsername?: boolean
-  githubToken?: boolean
+  personalAccessToken?: boolean
   refreshTokenHash?: boolean
-  emailVerified?: boolean
   isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -1462,11 +988,8 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   passwordHash?: boolean
   name?: boolean
   avatarUrl?: boolean
-  githubId?: boolean
-  githubUsername?: boolean
-  githubToken?: boolean
+  personalAccessToken?: boolean
   refreshTokenHash?: boolean
-  emailVerified?: boolean
   isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -1479,25 +1002,20 @@ export type UserSelectScalar = {
   passwordHash?: boolean
   name?: boolean
   avatarUrl?: boolean
-  githubId?: boolean
-  githubUsername?: boolean
-  githubToken?: boolean
+  personalAccessToken?: boolean
   refreshTokenHash?: boolean
-  emailVerified?: boolean
   isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   lastLoginAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "passwordHash" | "name" | "avatarUrl" | "githubId" | "githubUsername" | "githubToken" | "refreshTokenHash" | "emailVerified" | "isActive" | "createdAt" | "updatedAt" | "lastLoginAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "passwordHash" | "name" | "avatarUrl" | "personalAccessToken" | "refreshTokenHash" | "isActive" | "createdAt" | "updatedAt" | "lastLoginAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   projects?: boolean | Prisma.User$projectsArgs<ExtArgs>
   sessions?: boolean | Prisma.User$sessionsArgs<ExtArgs>
   auditLogs?: boolean | Prisma.User$auditLogsArgs<ExtArgs>
   deploymentsTriggered?: boolean | Prisma.User$deploymentsTriggeredArgs<ExtArgs>
-  verificationTokens?: boolean | Prisma.User$verificationTokensArgs<ExtArgs>
-  githubInstallations?: boolean | Prisma.User$githubInstallationsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -1510,20 +1028,15 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     sessions: Prisma.$UserSessionPayload<ExtArgs>[]
     auditLogs: Prisma.$AuditLogPayload<ExtArgs>[]
     deploymentsTriggered: Prisma.$DeploymentPayload<ExtArgs>[]
-    verificationTokens: Prisma.$VerificationTokenPayload<ExtArgs>[]
-    githubInstallations: Prisma.$GithubInstallationPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     email: string
-    passwordHash: string | null
+    passwordHash: string
     name: string
     avatarUrl: string | null
-    githubId: number | null
-    githubUsername: string | null
-    githubToken: string | null
+    personalAccessToken: string | null
     refreshTokenHash: string | null
-    emailVerified: boolean
     isActive: boolean
     createdAt: Date
     updatedAt: Date
@@ -1926,8 +1439,6 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   sessions<T extends Prisma.User$sessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   auditLogs<T extends Prisma.User$auditLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$auditLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   deploymentsTriggered<T extends Prisma.User$deploymentsTriggeredArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$deploymentsTriggeredArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DeploymentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  verificationTokens<T extends Prisma.User$verificationTokensArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$verificationTokensArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$VerificationTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  githubInstallations<T extends Prisma.User$githubInstallationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$githubInstallationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GithubInstallationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1962,11 +1473,8 @@ export interface UserFieldRefs {
   readonly passwordHash: Prisma.FieldRef<"User", 'String'>
   readonly name: Prisma.FieldRef<"User", 'String'>
   readonly avatarUrl: Prisma.FieldRef<"User", 'String'>
-  readonly githubId: Prisma.FieldRef<"User", 'Int'>
-  readonly githubUsername: Prisma.FieldRef<"User", 'String'>
-  readonly githubToken: Prisma.FieldRef<"User", 'String'>
+  readonly personalAccessToken: Prisma.FieldRef<"User", 'String'>
   readonly refreshTokenHash: Prisma.FieldRef<"User", 'String'>
-  readonly emailVerified: Prisma.FieldRef<"User", 'Boolean'>
   readonly isActive: Prisma.FieldRef<"User", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"User", 'DateTime'>
@@ -2457,54 +1965,6 @@ export type User$deploymentsTriggeredArgs<ExtArgs extends runtime.Types.Extensio
   take?: number
   skip?: number
   distinct?: Prisma.DeploymentScalarFieldEnum | Prisma.DeploymentScalarFieldEnum[]
-}
-
-/**
- * User.verificationTokens
- */
-export type User$verificationTokensArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the VerificationToken
-   */
-  select?: Prisma.VerificationTokenSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the VerificationToken
-   */
-  omit?: Prisma.VerificationTokenOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.VerificationTokenInclude<ExtArgs> | null
-  where?: Prisma.VerificationTokenWhereInput
-  orderBy?: Prisma.VerificationTokenOrderByWithRelationInput | Prisma.VerificationTokenOrderByWithRelationInput[]
-  cursor?: Prisma.VerificationTokenWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.VerificationTokenScalarFieldEnum | Prisma.VerificationTokenScalarFieldEnum[]
-}
-
-/**
- * User.githubInstallations
- */
-export type User$githubInstallationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the GithubInstallation
-   */
-  select?: Prisma.GithubInstallationSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the GithubInstallation
-   */
-  omit?: Prisma.GithubInstallationOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.GithubInstallationInclude<ExtArgs> | null
-  where?: Prisma.GithubInstallationWhereInput
-  orderBy?: Prisma.GithubInstallationOrderByWithRelationInput | Prisma.GithubInstallationOrderByWithRelationInput[]
-  cursor?: Prisma.GithubInstallationWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.GithubInstallationScalarFieldEnum | Prisma.GithubInstallationScalarFieldEnum[]
 }
 
 /**

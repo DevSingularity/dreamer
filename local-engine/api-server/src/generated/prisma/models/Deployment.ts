@@ -57,16 +57,12 @@ export type DeploymentMinAggregateOutputType = {
   commitAuthor: string | null
   deployedById: string | null
   url: string | null
-  ecsTaskArn: string | null
-  ecsServiceArn: string | null
-  ecsTaskDefArn: string | null
-  ecrImageUri: string | null
-  albTargetGroupArn: string | null
-  albListenerRuleArn: string | null
-  lambdaFunctionArn: string | null
-  lambdaFunctionName: string | null
-  lambdaFunctionUrl: string | null
-  s3Prefix: string | null
+  buildContainerId: string | null
+  imageUri: string | null
+  appContainerId: string | null
+  appContainerName: string | null
+  appUrl: string | null
+  outputPrefix: string | null
   errorMessage: string | null
   errorCode: string | null
   errorStep: string | null
@@ -102,16 +98,12 @@ export type DeploymentMaxAggregateOutputType = {
   commitAuthor: string | null
   deployedById: string | null
   url: string | null
-  ecsTaskArn: string | null
-  ecsServiceArn: string | null
-  ecsTaskDefArn: string | null
-  ecrImageUri: string | null
-  albTargetGroupArn: string | null
-  albListenerRuleArn: string | null
-  lambdaFunctionArn: string | null
-  lambdaFunctionName: string | null
-  lambdaFunctionUrl: string | null
-  s3Prefix: string | null
+  buildContainerId: string | null
+  imageUri: string | null
+  appContainerId: string | null
+  appContainerName: string | null
+  appUrl: string | null
+  outputPrefix: string | null
   errorMessage: string | null
   errorCode: string | null
   errorStep: string | null
@@ -147,16 +139,12 @@ export type DeploymentCountAggregateOutputType = {
   commitAuthor: number
   deployedById: number
   url: number
-  ecsTaskArn: number
-  ecsServiceArn: number
-  ecsTaskDefArn: number
-  ecrImageUri: number
-  albTargetGroupArn: number
-  albListenerRuleArn: number
-  lambdaFunctionArn: number
-  lambdaFunctionName: number
-  lambdaFunctionUrl: number
-  s3Prefix: number
+  buildContainerId: number
+  imageUri: number
+  appContainerId: number
+  appContainerName: number
+  appUrl: number
+  outputPrefix: number
   errorMessage: number
   errorCode: number
   errorStep: number
@@ -210,16 +198,12 @@ export type DeploymentMinAggregateInputType = {
   commitAuthor?: true
   deployedById?: true
   url?: true
-  ecsTaskArn?: true
-  ecsServiceArn?: true
-  ecsTaskDefArn?: true
-  ecrImageUri?: true
-  albTargetGroupArn?: true
-  albListenerRuleArn?: true
-  lambdaFunctionArn?: true
-  lambdaFunctionName?: true
-  lambdaFunctionUrl?: true
-  s3Prefix?: true
+  buildContainerId?: true
+  imageUri?: true
+  appContainerId?: true
+  appContainerName?: true
+  appUrl?: true
+  outputPrefix?: true
   errorMessage?: true
   errorCode?: true
   errorStep?: true
@@ -255,16 +239,12 @@ export type DeploymentMaxAggregateInputType = {
   commitAuthor?: true
   deployedById?: true
   url?: true
-  ecsTaskArn?: true
-  ecsServiceArn?: true
-  ecsTaskDefArn?: true
-  ecrImageUri?: true
-  albTargetGroupArn?: true
-  albListenerRuleArn?: true
-  lambdaFunctionArn?: true
-  lambdaFunctionName?: true
-  lambdaFunctionUrl?: true
-  s3Prefix?: true
+  buildContainerId?: true
+  imageUri?: true
+  appContainerId?: true
+  appContainerName?: true
+  appUrl?: true
+  outputPrefix?: true
   errorMessage?: true
   errorCode?: true
   errorStep?: true
@@ -300,16 +280,12 @@ export type DeploymentCountAggregateInputType = {
   commitAuthor?: true
   deployedById?: true
   url?: true
-  ecsTaskArn?: true
-  ecsServiceArn?: true
-  ecsTaskDefArn?: true
-  ecrImageUri?: true
-  albTargetGroupArn?: true
-  albListenerRuleArn?: true
-  lambdaFunctionArn?: true
-  lambdaFunctionName?: true
-  lambdaFunctionUrl?: true
-  s3Prefix?: true
+  buildContainerId?: true
+  imageUri?: true
+  appContainerId?: true
+  appContainerName?: true
+  appUrl?: true
+  outputPrefix?: true
   errorMessage?: true
   errorCode?: true
   errorStep?: true
@@ -432,16 +408,12 @@ export type DeploymentGroupByOutputType = {
   commitAuthor: string | null
   deployedById: string | null
   url: string | null
-  ecsTaskArn: string | null
-  ecsServiceArn: string | null
-  ecsTaskDefArn: string | null
-  ecrImageUri: string | null
-  albTargetGroupArn: string | null
-  albListenerRuleArn: string | null
-  lambdaFunctionArn: string | null
-  lambdaFunctionName: string | null
-  lambdaFunctionUrl: string | null
-  s3Prefix: string | null
+  buildContainerId: string | null
+  imageUri: string | null
+  appContainerId: string | null
+  appContainerName: string | null
+  appUrl: string | null
+  outputPrefix: string | null
   errorMessage: string | null
   errorCode: string | null
   errorStep: string | null
@@ -500,16 +472,12 @@ export type DeploymentWhereInput = {
   commitAuthor?: Prisma.StringNullableFilter<"Deployment"> | string | null
   deployedById?: Prisma.UuidNullableFilter<"Deployment"> | string | null
   url?: Prisma.StringNullableFilter<"Deployment"> | string | null
-  ecsTaskArn?: Prisma.StringNullableFilter<"Deployment"> | string | null
-  ecsServiceArn?: Prisma.StringNullableFilter<"Deployment"> | string | null
-  ecsTaskDefArn?: Prisma.StringNullableFilter<"Deployment"> | string | null
-  ecrImageUri?: Prisma.StringNullableFilter<"Deployment"> | string | null
-  albTargetGroupArn?: Prisma.StringNullableFilter<"Deployment"> | string | null
-  albListenerRuleArn?: Prisma.StringNullableFilter<"Deployment"> | string | null
-  lambdaFunctionArn?: Prisma.StringNullableFilter<"Deployment"> | string | null
-  lambdaFunctionName?: Prisma.StringNullableFilter<"Deployment"> | string | null
-  lambdaFunctionUrl?: Prisma.StringNullableFilter<"Deployment"> | string | null
-  s3Prefix?: Prisma.StringNullableFilter<"Deployment"> | string | null
+  buildContainerId?: Prisma.StringNullableFilter<"Deployment"> | string | null
+  imageUri?: Prisma.StringNullableFilter<"Deployment"> | string | null
+  appContainerId?: Prisma.StringNullableFilter<"Deployment"> | string | null
+  appContainerName?: Prisma.StringNullableFilter<"Deployment"> | string | null
+  appUrl?: Prisma.StringNullableFilter<"Deployment"> | string | null
+  outputPrefix?: Prisma.StringNullableFilter<"Deployment"> | string | null
   errorMessage?: Prisma.StringNullableFilter<"Deployment"> | string | null
   errorCode?: Prisma.StringNullableFilter<"Deployment"> | string | null
   errorStep?: Prisma.StringNullableFilter<"Deployment"> | string | null
@@ -550,16 +518,12 @@ export type DeploymentOrderByWithRelationInput = {
   commitAuthor?: Prisma.SortOrderInput | Prisma.SortOrder
   deployedById?: Prisma.SortOrderInput | Prisma.SortOrder
   url?: Prisma.SortOrderInput | Prisma.SortOrder
-  ecsTaskArn?: Prisma.SortOrderInput | Prisma.SortOrder
-  ecsServiceArn?: Prisma.SortOrderInput | Prisma.SortOrder
-  ecsTaskDefArn?: Prisma.SortOrderInput | Prisma.SortOrder
-  ecrImageUri?: Prisma.SortOrderInput | Prisma.SortOrder
-  albTargetGroupArn?: Prisma.SortOrderInput | Prisma.SortOrder
-  albListenerRuleArn?: Prisma.SortOrderInput | Prisma.SortOrder
-  lambdaFunctionArn?: Prisma.SortOrderInput | Prisma.SortOrder
-  lambdaFunctionName?: Prisma.SortOrderInput | Prisma.SortOrder
-  lambdaFunctionUrl?: Prisma.SortOrderInput | Prisma.SortOrder
-  s3Prefix?: Prisma.SortOrderInput | Prisma.SortOrder
+  buildContainerId?: Prisma.SortOrderInput | Prisma.SortOrder
+  imageUri?: Prisma.SortOrderInput | Prisma.SortOrder
+  appContainerId?: Prisma.SortOrderInput | Prisma.SortOrder
+  appContainerName?: Prisma.SortOrderInput | Prisma.SortOrder
+  appUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  outputPrefix?: Prisma.SortOrderInput | Prisma.SortOrder
   errorMessage?: Prisma.SortOrderInput | Prisma.SortOrder
   errorCode?: Prisma.SortOrderInput | Prisma.SortOrder
   errorStep?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -603,16 +567,12 @@ export type DeploymentWhereUniqueInput = Prisma.AtLeast<{
   commitAuthor?: Prisma.StringNullableFilter<"Deployment"> | string | null
   deployedById?: Prisma.UuidNullableFilter<"Deployment"> | string | null
   url?: Prisma.StringNullableFilter<"Deployment"> | string | null
-  ecsTaskArn?: Prisma.StringNullableFilter<"Deployment"> | string | null
-  ecsServiceArn?: Prisma.StringNullableFilter<"Deployment"> | string | null
-  ecsTaskDefArn?: Prisma.StringNullableFilter<"Deployment"> | string | null
-  ecrImageUri?: Prisma.StringNullableFilter<"Deployment"> | string | null
-  albTargetGroupArn?: Prisma.StringNullableFilter<"Deployment"> | string | null
-  albListenerRuleArn?: Prisma.StringNullableFilter<"Deployment"> | string | null
-  lambdaFunctionArn?: Prisma.StringNullableFilter<"Deployment"> | string | null
-  lambdaFunctionName?: Prisma.StringNullableFilter<"Deployment"> | string | null
-  lambdaFunctionUrl?: Prisma.StringNullableFilter<"Deployment"> | string | null
-  s3Prefix?: Prisma.StringNullableFilter<"Deployment"> | string | null
+  buildContainerId?: Prisma.StringNullableFilter<"Deployment"> | string | null
+  imageUri?: Prisma.StringNullableFilter<"Deployment"> | string | null
+  appContainerId?: Prisma.StringNullableFilter<"Deployment"> | string | null
+  appContainerName?: Prisma.StringNullableFilter<"Deployment"> | string | null
+  appUrl?: Prisma.StringNullableFilter<"Deployment"> | string | null
+  outputPrefix?: Prisma.StringNullableFilter<"Deployment"> | string | null
   errorMessage?: Prisma.StringNullableFilter<"Deployment"> | string | null
   errorCode?: Prisma.StringNullableFilter<"Deployment"> | string | null
   errorStep?: Prisma.StringNullableFilter<"Deployment"> | string | null
@@ -653,16 +613,12 @@ export type DeploymentOrderByWithAggregationInput = {
   commitAuthor?: Prisma.SortOrderInput | Prisma.SortOrder
   deployedById?: Prisma.SortOrderInput | Prisma.SortOrder
   url?: Prisma.SortOrderInput | Prisma.SortOrder
-  ecsTaskArn?: Prisma.SortOrderInput | Prisma.SortOrder
-  ecsServiceArn?: Prisma.SortOrderInput | Prisma.SortOrder
-  ecsTaskDefArn?: Prisma.SortOrderInput | Prisma.SortOrder
-  ecrImageUri?: Prisma.SortOrderInput | Prisma.SortOrder
-  albTargetGroupArn?: Prisma.SortOrderInput | Prisma.SortOrder
-  albListenerRuleArn?: Prisma.SortOrderInput | Prisma.SortOrder
-  lambdaFunctionArn?: Prisma.SortOrderInput | Prisma.SortOrder
-  lambdaFunctionName?: Prisma.SortOrderInput | Prisma.SortOrder
-  lambdaFunctionUrl?: Prisma.SortOrderInput | Prisma.SortOrder
-  s3Prefix?: Prisma.SortOrderInput | Prisma.SortOrder
+  buildContainerId?: Prisma.SortOrderInput | Prisma.SortOrder
+  imageUri?: Prisma.SortOrderInput | Prisma.SortOrder
+  appContainerId?: Prisma.SortOrderInput | Prisma.SortOrder
+  appContainerName?: Prisma.SortOrderInput | Prisma.SortOrder
+  appUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  outputPrefix?: Prisma.SortOrderInput | Prisma.SortOrder
   errorMessage?: Prisma.SortOrderInput | Prisma.SortOrder
   errorCode?: Prisma.SortOrderInput | Prisma.SortOrder
   errorStep?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -706,16 +662,12 @@ export type DeploymentScalarWhereWithAggregatesInput = {
   commitAuthor?: Prisma.StringNullableWithAggregatesFilter<"Deployment"> | string | null
   deployedById?: Prisma.UuidNullableWithAggregatesFilter<"Deployment"> | string | null
   url?: Prisma.StringNullableWithAggregatesFilter<"Deployment"> | string | null
-  ecsTaskArn?: Prisma.StringNullableWithAggregatesFilter<"Deployment"> | string | null
-  ecsServiceArn?: Prisma.StringNullableWithAggregatesFilter<"Deployment"> | string | null
-  ecsTaskDefArn?: Prisma.StringNullableWithAggregatesFilter<"Deployment"> | string | null
-  ecrImageUri?: Prisma.StringNullableWithAggregatesFilter<"Deployment"> | string | null
-  albTargetGroupArn?: Prisma.StringNullableWithAggregatesFilter<"Deployment"> | string | null
-  albListenerRuleArn?: Prisma.StringNullableWithAggregatesFilter<"Deployment"> | string | null
-  lambdaFunctionArn?: Prisma.StringNullableWithAggregatesFilter<"Deployment"> | string | null
-  lambdaFunctionName?: Prisma.StringNullableWithAggregatesFilter<"Deployment"> | string | null
-  lambdaFunctionUrl?: Prisma.StringNullableWithAggregatesFilter<"Deployment"> | string | null
-  s3Prefix?: Prisma.StringNullableWithAggregatesFilter<"Deployment"> | string | null
+  buildContainerId?: Prisma.StringNullableWithAggregatesFilter<"Deployment"> | string | null
+  imageUri?: Prisma.StringNullableWithAggregatesFilter<"Deployment"> | string | null
+  appContainerId?: Prisma.StringNullableWithAggregatesFilter<"Deployment"> | string | null
+  appContainerName?: Prisma.StringNullableWithAggregatesFilter<"Deployment"> | string | null
+  appUrl?: Prisma.StringNullableWithAggregatesFilter<"Deployment"> | string | null
+  outputPrefix?: Prisma.StringNullableWithAggregatesFilter<"Deployment"> | string | null
   errorMessage?: Prisma.StringNullableWithAggregatesFilter<"Deployment"> | string | null
   errorCode?: Prisma.StringNullableWithAggregatesFilter<"Deployment"> | string | null
   errorStep?: Prisma.StringNullableWithAggregatesFilter<"Deployment"> | string | null
@@ -749,16 +701,12 @@ export type DeploymentCreateInput = {
   commitMessage?: string | null
   commitAuthor?: string | null
   url?: string | null
-  ecsTaskArn?: string | null
-  ecsServiceArn?: string | null
-  ecsTaskDefArn?: string | null
-  ecrImageUri?: string | null
-  albTargetGroupArn?: string | null
-  albListenerRuleArn?: string | null
-  lambdaFunctionArn?: string | null
-  lambdaFunctionName?: string | null
-  lambdaFunctionUrl?: string | null
-  s3Prefix?: string | null
+  buildContainerId?: string | null
+  imageUri?: string | null
+  appContainerId?: string | null
+  appContainerName?: string | null
+  appUrl?: string | null
+  outputPrefix?: string | null
   errorMessage?: string | null
   errorCode?: string | null
   errorStep?: string | null
@@ -799,16 +747,12 @@ export type DeploymentUncheckedCreateInput = {
   commitAuthor?: string | null
   deployedById?: string | null
   url?: string | null
-  ecsTaskArn?: string | null
-  ecsServiceArn?: string | null
-  ecsTaskDefArn?: string | null
-  ecrImageUri?: string | null
-  albTargetGroupArn?: string | null
-  albListenerRuleArn?: string | null
-  lambdaFunctionArn?: string | null
-  lambdaFunctionName?: string | null
-  lambdaFunctionUrl?: string | null
-  s3Prefix?: string | null
+  buildContainerId?: string | null
+  imageUri?: string | null
+  appContainerId?: string | null
+  appContainerName?: string | null
+  appUrl?: string | null
+  outputPrefix?: string | null
   errorMessage?: string | null
   errorCode?: string | null
   errorStep?: string | null
@@ -845,16 +789,12 @@ export type DeploymentUpdateInput = {
   commitMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   commitAuthor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ecsTaskArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ecsServiceArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ecsTaskDefArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ecrImageUri?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  albTargetGroupArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  albListenerRuleArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lambdaFunctionArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lambdaFunctionName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lambdaFunctionUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  s3Prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  buildContainerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imageUri?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appContainerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appContainerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  outputPrefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   errorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   errorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   errorStep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -895,16 +835,12 @@ export type DeploymentUncheckedUpdateInput = {
   commitAuthor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deployedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ecsTaskArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ecsServiceArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ecsTaskDefArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ecrImageUri?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  albTargetGroupArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  albListenerRuleArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lambdaFunctionArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lambdaFunctionName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lambdaFunctionUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  s3Prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  buildContainerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imageUri?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appContainerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appContainerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  outputPrefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   errorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   errorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   errorStep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -943,16 +879,12 @@ export type DeploymentCreateManyInput = {
   commitAuthor?: string | null
   deployedById?: string | null
   url?: string | null
-  ecsTaskArn?: string | null
-  ecsServiceArn?: string | null
-  ecsTaskDefArn?: string | null
-  ecrImageUri?: string | null
-  albTargetGroupArn?: string | null
-  albListenerRuleArn?: string | null
-  lambdaFunctionArn?: string | null
-  lambdaFunctionName?: string | null
-  lambdaFunctionUrl?: string | null
-  s3Prefix?: string | null
+  buildContainerId?: string | null
+  imageUri?: string | null
+  appContainerId?: string | null
+  appContainerName?: string | null
+  appUrl?: string | null
+  outputPrefix?: string | null
   errorMessage?: string | null
   errorCode?: string | null
   errorStep?: string | null
@@ -986,16 +918,12 @@ export type DeploymentUpdateManyMutationInput = {
   commitMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   commitAuthor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ecsTaskArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ecsServiceArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ecsTaskDefArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ecrImageUri?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  albTargetGroupArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  albListenerRuleArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lambdaFunctionArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lambdaFunctionName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lambdaFunctionUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  s3Prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  buildContainerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imageUri?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appContainerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appContainerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  outputPrefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   errorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   errorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   errorStep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1031,16 +959,12 @@ export type DeploymentUncheckedUpdateManyInput = {
   commitAuthor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deployedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ecsTaskArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ecsServiceArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ecsTaskDefArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ecrImageUri?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  albTargetGroupArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  albListenerRuleArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lambdaFunctionArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lambdaFunctionName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lambdaFunctionUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  s3Prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  buildContainerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imageUri?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appContainerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appContainerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  outputPrefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   errorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   errorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   errorStep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1086,16 +1010,12 @@ export type DeploymentCountOrderByAggregateInput = {
   commitAuthor?: Prisma.SortOrder
   deployedById?: Prisma.SortOrder
   url?: Prisma.SortOrder
-  ecsTaskArn?: Prisma.SortOrder
-  ecsServiceArn?: Prisma.SortOrder
-  ecsTaskDefArn?: Prisma.SortOrder
-  ecrImageUri?: Prisma.SortOrder
-  albTargetGroupArn?: Prisma.SortOrder
-  albListenerRuleArn?: Prisma.SortOrder
-  lambdaFunctionArn?: Prisma.SortOrder
-  lambdaFunctionName?: Prisma.SortOrder
-  lambdaFunctionUrl?: Prisma.SortOrder
-  s3Prefix?: Prisma.SortOrder
+  buildContainerId?: Prisma.SortOrder
+  imageUri?: Prisma.SortOrder
+  appContainerId?: Prisma.SortOrder
+  appContainerName?: Prisma.SortOrder
+  appUrl?: Prisma.SortOrder
+  outputPrefix?: Prisma.SortOrder
   errorMessage?: Prisma.SortOrder
   errorCode?: Prisma.SortOrder
   errorStep?: Prisma.SortOrder
@@ -1139,16 +1059,12 @@ export type DeploymentMaxOrderByAggregateInput = {
   commitAuthor?: Prisma.SortOrder
   deployedById?: Prisma.SortOrder
   url?: Prisma.SortOrder
-  ecsTaskArn?: Prisma.SortOrder
-  ecsServiceArn?: Prisma.SortOrder
-  ecsTaskDefArn?: Prisma.SortOrder
-  ecrImageUri?: Prisma.SortOrder
-  albTargetGroupArn?: Prisma.SortOrder
-  albListenerRuleArn?: Prisma.SortOrder
-  lambdaFunctionArn?: Prisma.SortOrder
-  lambdaFunctionName?: Prisma.SortOrder
-  lambdaFunctionUrl?: Prisma.SortOrder
-  s3Prefix?: Prisma.SortOrder
+  buildContainerId?: Prisma.SortOrder
+  imageUri?: Prisma.SortOrder
+  appContainerId?: Prisma.SortOrder
+  appContainerName?: Prisma.SortOrder
+  appUrl?: Prisma.SortOrder
+  outputPrefix?: Prisma.SortOrder
   errorMessage?: Prisma.SortOrder
   errorCode?: Prisma.SortOrder
   errorStep?: Prisma.SortOrder
@@ -1184,16 +1100,12 @@ export type DeploymentMinOrderByAggregateInput = {
   commitAuthor?: Prisma.SortOrder
   deployedById?: Prisma.SortOrder
   url?: Prisma.SortOrder
-  ecsTaskArn?: Prisma.SortOrder
-  ecsServiceArn?: Prisma.SortOrder
-  ecsTaskDefArn?: Prisma.SortOrder
-  ecrImageUri?: Prisma.SortOrder
-  albTargetGroupArn?: Prisma.SortOrder
-  albListenerRuleArn?: Prisma.SortOrder
-  lambdaFunctionArn?: Prisma.SortOrder
-  lambdaFunctionName?: Prisma.SortOrder
-  lambdaFunctionUrl?: Prisma.SortOrder
-  s3Prefix?: Prisma.SortOrder
+  buildContainerId?: Prisma.SortOrder
+  imageUri?: Prisma.SortOrder
+  appContainerId?: Prisma.SortOrder
+  appContainerName?: Prisma.SortOrder
+  appUrl?: Prisma.SortOrder
+  outputPrefix?: Prisma.SortOrder
   errorMessage?: Prisma.SortOrder
   errorCode?: Prisma.SortOrder
   errorStep?: Prisma.SortOrder
@@ -1319,6 +1231,14 @@ export type EnumEnvironmentTargetFieldUpdateOperationsInput = {
   set?: $Enums.EnvironmentTarget
 }
 
+export type IntFieldUpdateOperationsInput = {
+  set?: number
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
+}
+
 export type BigIntFieldUpdateOperationsInput = {
   set?: bigint | number
   increment?: bigint | number
@@ -1382,16 +1302,12 @@ export type DeploymentCreateWithoutDeployedByInput = {
   commitMessage?: string | null
   commitAuthor?: string | null
   url?: string | null
-  ecsTaskArn?: string | null
-  ecsServiceArn?: string | null
-  ecsTaskDefArn?: string | null
-  ecrImageUri?: string | null
-  albTargetGroupArn?: string | null
-  albListenerRuleArn?: string | null
-  lambdaFunctionArn?: string | null
-  lambdaFunctionName?: string | null
-  lambdaFunctionUrl?: string | null
-  s3Prefix?: string | null
+  buildContainerId?: string | null
+  imageUri?: string | null
+  appContainerId?: string | null
+  appContainerName?: string | null
+  appUrl?: string | null
+  outputPrefix?: string | null
   errorMessage?: string | null
   errorCode?: string | null
   errorStep?: string | null
@@ -1430,16 +1346,12 @@ export type DeploymentUncheckedCreateWithoutDeployedByInput = {
   commitMessage?: string | null
   commitAuthor?: string | null
   url?: string | null
-  ecsTaskArn?: string | null
-  ecsServiceArn?: string | null
-  ecsTaskDefArn?: string | null
-  ecrImageUri?: string | null
-  albTargetGroupArn?: string | null
-  albListenerRuleArn?: string | null
-  lambdaFunctionArn?: string | null
-  lambdaFunctionName?: string | null
-  lambdaFunctionUrl?: string | null
-  s3Prefix?: string | null
+  buildContainerId?: string | null
+  imageUri?: string | null
+  appContainerId?: string | null
+  appContainerName?: string | null
+  appUrl?: string | null
+  outputPrefix?: string | null
   errorMessage?: string | null
   errorCode?: string | null
   errorStep?: string | null
@@ -1507,16 +1419,12 @@ export type DeploymentScalarWhereInput = {
   commitAuthor?: Prisma.StringNullableFilter<"Deployment"> | string | null
   deployedById?: Prisma.UuidNullableFilter<"Deployment"> | string | null
   url?: Prisma.StringNullableFilter<"Deployment"> | string | null
-  ecsTaskArn?: Prisma.StringNullableFilter<"Deployment"> | string | null
-  ecsServiceArn?: Prisma.StringNullableFilter<"Deployment"> | string | null
-  ecsTaskDefArn?: Prisma.StringNullableFilter<"Deployment"> | string | null
-  ecrImageUri?: Prisma.StringNullableFilter<"Deployment"> | string | null
-  albTargetGroupArn?: Prisma.StringNullableFilter<"Deployment"> | string | null
-  albListenerRuleArn?: Prisma.StringNullableFilter<"Deployment"> | string | null
-  lambdaFunctionArn?: Prisma.StringNullableFilter<"Deployment"> | string | null
-  lambdaFunctionName?: Prisma.StringNullableFilter<"Deployment"> | string | null
-  lambdaFunctionUrl?: Prisma.StringNullableFilter<"Deployment"> | string | null
-  s3Prefix?: Prisma.StringNullableFilter<"Deployment"> | string | null
+  buildContainerId?: Prisma.StringNullableFilter<"Deployment"> | string | null
+  imageUri?: Prisma.StringNullableFilter<"Deployment"> | string | null
+  appContainerId?: Prisma.StringNullableFilter<"Deployment"> | string | null
+  appContainerName?: Prisma.StringNullableFilter<"Deployment"> | string | null
+  appUrl?: Prisma.StringNullableFilter<"Deployment"> | string | null
+  outputPrefix?: Prisma.StringNullableFilter<"Deployment"> | string | null
   errorMessage?: Prisma.StringNullableFilter<"Deployment"> | string | null
   errorCode?: Prisma.StringNullableFilter<"Deployment"> | string | null
   errorStep?: Prisma.StringNullableFilter<"Deployment"> | string | null
@@ -1550,16 +1458,12 @@ export type DeploymentCreateWithoutProjectInput = {
   commitMessage?: string | null
   commitAuthor?: string | null
   url?: string | null
-  ecsTaskArn?: string | null
-  ecsServiceArn?: string | null
-  ecsTaskDefArn?: string | null
-  ecrImageUri?: string | null
-  albTargetGroupArn?: string | null
-  albListenerRuleArn?: string | null
-  lambdaFunctionArn?: string | null
-  lambdaFunctionName?: string | null
-  lambdaFunctionUrl?: string | null
-  s3Prefix?: string | null
+  buildContainerId?: string | null
+  imageUri?: string | null
+  appContainerId?: string | null
+  appContainerName?: string | null
+  appUrl?: string | null
+  outputPrefix?: string | null
   errorMessage?: string | null
   errorCode?: string | null
   errorStep?: string | null
@@ -1598,16 +1502,12 @@ export type DeploymentUncheckedCreateWithoutProjectInput = {
   commitAuthor?: string | null
   deployedById?: string | null
   url?: string | null
-  ecsTaskArn?: string | null
-  ecsServiceArn?: string | null
-  ecsTaskDefArn?: string | null
-  ecrImageUri?: string | null
-  albTargetGroupArn?: string | null
-  albListenerRuleArn?: string | null
-  lambdaFunctionArn?: string | null
-  lambdaFunctionName?: string | null
-  lambdaFunctionUrl?: string | null
-  s3Prefix?: string | null
+  buildContainerId?: string | null
+  imageUri?: string | null
+  appContainerId?: string | null
+  appContainerName?: string | null
+  appUrl?: string | null
+  outputPrefix?: string | null
   errorMessage?: string | null
   errorCode?: string | null
   errorStep?: string | null
@@ -1670,16 +1570,12 @@ export type DeploymentCreateWithoutStateTransitionsInput = {
   commitMessage?: string | null
   commitAuthor?: string | null
   url?: string | null
-  ecsTaskArn?: string | null
-  ecsServiceArn?: string | null
-  ecsTaskDefArn?: string | null
-  ecrImageUri?: string | null
-  albTargetGroupArn?: string | null
-  albListenerRuleArn?: string | null
-  lambdaFunctionArn?: string | null
-  lambdaFunctionName?: string | null
-  lambdaFunctionUrl?: string | null
-  s3Prefix?: string | null
+  buildContainerId?: string | null
+  imageUri?: string | null
+  appContainerId?: string | null
+  appContainerName?: string | null
+  appUrl?: string | null
+  outputPrefix?: string | null
   errorMessage?: string | null
   errorCode?: string | null
   errorStep?: string | null
@@ -1719,16 +1615,12 @@ export type DeploymentUncheckedCreateWithoutStateTransitionsInput = {
   commitAuthor?: string | null
   deployedById?: string | null
   url?: string | null
-  ecsTaskArn?: string | null
-  ecsServiceArn?: string | null
-  ecsTaskDefArn?: string | null
-  ecrImageUri?: string | null
-  albTargetGroupArn?: string | null
-  albListenerRuleArn?: string | null
-  lambdaFunctionArn?: string | null
-  lambdaFunctionName?: string | null
-  lambdaFunctionUrl?: string | null
-  s3Prefix?: string | null
+  buildContainerId?: string | null
+  imageUri?: string | null
+  appContainerId?: string | null
+  appContainerName?: string | null
+  appUrl?: string | null
+  outputPrefix?: string | null
   errorMessage?: string | null
   errorCode?: string | null
   errorStep?: string | null
@@ -1780,16 +1672,12 @@ export type DeploymentUpdateWithoutStateTransitionsInput = {
   commitMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   commitAuthor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ecsTaskArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ecsServiceArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ecsTaskDefArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ecrImageUri?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  albTargetGroupArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  albListenerRuleArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lambdaFunctionArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lambdaFunctionName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lambdaFunctionUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  s3Prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  buildContainerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imageUri?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appContainerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appContainerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  outputPrefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   errorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   errorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   errorStep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1829,16 +1717,12 @@ export type DeploymentUncheckedUpdateWithoutStateTransitionsInput = {
   commitAuthor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deployedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ecsTaskArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ecsServiceArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ecsTaskDefArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ecrImageUri?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  albTargetGroupArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  albListenerRuleArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lambdaFunctionArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lambdaFunctionName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lambdaFunctionUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  s3Prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  buildContainerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imageUri?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appContainerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appContainerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  outputPrefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   errorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   errorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   errorStep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1874,16 +1758,12 @@ export type DeploymentCreateWithoutLogsInput = {
   commitMessage?: string | null
   commitAuthor?: string | null
   url?: string | null
-  ecsTaskArn?: string | null
-  ecsServiceArn?: string | null
-  ecsTaskDefArn?: string | null
-  ecrImageUri?: string | null
-  albTargetGroupArn?: string | null
-  albListenerRuleArn?: string | null
-  lambdaFunctionArn?: string | null
-  lambdaFunctionName?: string | null
-  lambdaFunctionUrl?: string | null
-  s3Prefix?: string | null
+  buildContainerId?: string | null
+  imageUri?: string | null
+  appContainerId?: string | null
+  appContainerName?: string | null
+  appUrl?: string | null
+  outputPrefix?: string | null
   errorMessage?: string | null
   errorCode?: string | null
   errorStep?: string | null
@@ -1923,16 +1803,12 @@ export type DeploymentUncheckedCreateWithoutLogsInput = {
   commitAuthor?: string | null
   deployedById?: string | null
   url?: string | null
-  ecsTaskArn?: string | null
-  ecsServiceArn?: string | null
-  ecsTaskDefArn?: string | null
-  ecrImageUri?: string | null
-  albTargetGroupArn?: string | null
-  albListenerRuleArn?: string | null
-  lambdaFunctionArn?: string | null
-  lambdaFunctionName?: string | null
-  lambdaFunctionUrl?: string | null
-  s3Prefix?: string | null
+  buildContainerId?: string | null
+  imageUri?: string | null
+  appContainerId?: string | null
+  appContainerName?: string | null
+  appUrl?: string | null
+  outputPrefix?: string | null
   errorMessage?: string | null
   errorCode?: string | null
   errorStep?: string | null
@@ -1984,16 +1860,12 @@ export type DeploymentUpdateWithoutLogsInput = {
   commitMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   commitAuthor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ecsTaskArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ecsServiceArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ecsTaskDefArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ecrImageUri?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  albTargetGroupArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  albListenerRuleArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lambdaFunctionArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lambdaFunctionName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lambdaFunctionUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  s3Prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  buildContainerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imageUri?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appContainerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appContainerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  outputPrefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   errorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   errorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   errorStep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2033,16 +1905,12 @@ export type DeploymentUncheckedUpdateWithoutLogsInput = {
   commitAuthor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deployedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ecsTaskArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ecsServiceArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ecsTaskDefArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ecrImageUri?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  albTargetGroupArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  albListenerRuleArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lambdaFunctionArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lambdaFunctionName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lambdaFunctionUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  s3Prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  buildContainerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imageUri?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appContainerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appContainerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  outputPrefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   errorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   errorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   errorStep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2078,16 +1946,12 @@ export type DeploymentCreateWithoutEnvSnapshotInput = {
   commitMessage?: string | null
   commitAuthor?: string | null
   url?: string | null
-  ecsTaskArn?: string | null
-  ecsServiceArn?: string | null
-  ecsTaskDefArn?: string | null
-  ecrImageUri?: string | null
-  albTargetGroupArn?: string | null
-  albListenerRuleArn?: string | null
-  lambdaFunctionArn?: string | null
-  lambdaFunctionName?: string | null
-  lambdaFunctionUrl?: string | null
-  s3Prefix?: string | null
+  buildContainerId?: string | null
+  imageUri?: string | null
+  appContainerId?: string | null
+  appContainerName?: string | null
+  appUrl?: string | null
+  outputPrefix?: string | null
   errorMessage?: string | null
   errorCode?: string | null
   errorStep?: string | null
@@ -2127,16 +1991,12 @@ export type DeploymentUncheckedCreateWithoutEnvSnapshotInput = {
   commitAuthor?: string | null
   deployedById?: string | null
   url?: string | null
-  ecsTaskArn?: string | null
-  ecsServiceArn?: string | null
-  ecsTaskDefArn?: string | null
-  ecrImageUri?: string | null
-  albTargetGroupArn?: string | null
-  albListenerRuleArn?: string | null
-  lambdaFunctionArn?: string | null
-  lambdaFunctionName?: string | null
-  lambdaFunctionUrl?: string | null
-  s3Prefix?: string | null
+  buildContainerId?: string | null
+  imageUri?: string | null
+  appContainerId?: string | null
+  appContainerName?: string | null
+  appUrl?: string | null
+  outputPrefix?: string | null
   errorMessage?: string | null
   errorCode?: string | null
   errorStep?: string | null
@@ -2188,16 +2048,12 @@ export type DeploymentUpdateWithoutEnvSnapshotInput = {
   commitMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   commitAuthor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ecsTaskArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ecsServiceArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ecsTaskDefArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ecrImageUri?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  albTargetGroupArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  albListenerRuleArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lambdaFunctionArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lambdaFunctionName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lambdaFunctionUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  s3Prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  buildContainerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imageUri?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appContainerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appContainerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  outputPrefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   errorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   errorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   errorStep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2237,16 +2093,12 @@ export type DeploymentUncheckedUpdateWithoutEnvSnapshotInput = {
   commitAuthor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deployedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ecsTaskArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ecsServiceArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ecsTaskDefArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ecrImageUri?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  albTargetGroupArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  albListenerRuleArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lambdaFunctionArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lambdaFunctionName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lambdaFunctionUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  s3Prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  buildContainerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imageUri?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appContainerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appContainerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  outputPrefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   errorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   errorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   errorStep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2283,16 +2135,12 @@ export type DeploymentCreateManyDeployedByInput = {
   commitMessage?: string | null
   commitAuthor?: string | null
   url?: string | null
-  ecsTaskArn?: string | null
-  ecsServiceArn?: string | null
-  ecsTaskDefArn?: string | null
-  ecrImageUri?: string | null
-  albTargetGroupArn?: string | null
-  albListenerRuleArn?: string | null
-  lambdaFunctionArn?: string | null
-  lambdaFunctionName?: string | null
-  lambdaFunctionUrl?: string | null
-  s3Prefix?: string | null
+  buildContainerId?: string | null
+  imageUri?: string | null
+  appContainerId?: string | null
+  appContainerName?: string | null
+  appUrl?: string | null
+  outputPrefix?: string | null
   errorMessage?: string | null
   errorCode?: string | null
   errorStep?: string | null
@@ -2326,16 +2174,12 @@ export type DeploymentUpdateWithoutDeployedByInput = {
   commitMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   commitAuthor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ecsTaskArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ecsServiceArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ecsTaskDefArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ecrImageUri?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  albTargetGroupArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  albListenerRuleArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lambdaFunctionArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lambdaFunctionName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lambdaFunctionUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  s3Prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  buildContainerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imageUri?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appContainerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appContainerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  outputPrefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   errorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   errorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   errorStep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2374,16 +2218,12 @@ export type DeploymentUncheckedUpdateWithoutDeployedByInput = {
   commitMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   commitAuthor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ecsTaskArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ecsServiceArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ecsTaskDefArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ecrImageUri?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  albTargetGroupArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  albListenerRuleArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lambdaFunctionArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lambdaFunctionName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lambdaFunctionUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  s3Prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  buildContainerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imageUri?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appContainerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appContainerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  outputPrefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   errorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   errorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   errorStep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2421,16 +2261,12 @@ export type DeploymentUncheckedUpdateManyWithoutDeployedByInput = {
   commitMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   commitAuthor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ecsTaskArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ecsServiceArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ecsTaskDefArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ecrImageUri?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  albTargetGroupArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  albListenerRuleArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lambdaFunctionArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lambdaFunctionName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lambdaFunctionUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  s3Prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  buildContainerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imageUri?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appContainerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appContainerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  outputPrefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   errorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   errorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   errorStep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2465,16 +2301,12 @@ export type DeploymentCreateManyProjectInput = {
   commitAuthor?: string | null
   deployedById?: string | null
   url?: string | null
-  ecsTaskArn?: string | null
-  ecsServiceArn?: string | null
-  ecsTaskDefArn?: string | null
-  ecrImageUri?: string | null
-  albTargetGroupArn?: string | null
-  albListenerRuleArn?: string | null
-  lambdaFunctionArn?: string | null
-  lambdaFunctionName?: string | null
-  lambdaFunctionUrl?: string | null
-  s3Prefix?: string | null
+  buildContainerId?: string | null
+  imageUri?: string | null
+  appContainerId?: string | null
+  appContainerName?: string | null
+  appUrl?: string | null
+  outputPrefix?: string | null
   errorMessage?: string | null
   errorCode?: string | null
   errorStep?: string | null
@@ -2508,16 +2340,12 @@ export type DeploymentUpdateWithoutProjectInput = {
   commitMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   commitAuthor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ecsTaskArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ecsServiceArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ecsTaskDefArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ecrImageUri?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  albTargetGroupArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  albListenerRuleArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lambdaFunctionArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lambdaFunctionName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lambdaFunctionUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  s3Prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  buildContainerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imageUri?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appContainerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appContainerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  outputPrefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   errorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   errorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   errorStep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2556,16 +2384,12 @@ export type DeploymentUncheckedUpdateWithoutProjectInput = {
   commitAuthor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deployedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ecsTaskArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ecsServiceArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ecsTaskDefArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ecrImageUri?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  albTargetGroupArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  albListenerRuleArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lambdaFunctionArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lambdaFunctionName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lambdaFunctionUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  s3Prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  buildContainerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imageUri?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appContainerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appContainerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  outputPrefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   errorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   errorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   errorStep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2603,16 +2427,12 @@ export type DeploymentUncheckedUpdateManyWithoutProjectInput = {
   commitAuthor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deployedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ecsTaskArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ecsServiceArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ecsTaskDefArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ecrImageUri?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  albTargetGroupArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  albListenerRuleArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lambdaFunctionArn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lambdaFunctionName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lambdaFunctionUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  s3Prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  buildContainerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imageUri?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appContainerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appContainerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  outputPrefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   errorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   errorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   errorStep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2697,16 +2517,12 @@ export type DeploymentSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   commitAuthor?: boolean
   deployedById?: boolean
   url?: boolean
-  ecsTaskArn?: boolean
-  ecsServiceArn?: boolean
-  ecsTaskDefArn?: boolean
-  ecrImageUri?: boolean
-  albTargetGroupArn?: boolean
-  albListenerRuleArn?: boolean
-  lambdaFunctionArn?: boolean
-  lambdaFunctionName?: boolean
-  lambdaFunctionUrl?: boolean
-  s3Prefix?: boolean
+  buildContainerId?: boolean
+  imageUri?: boolean
+  appContainerId?: boolean
+  appContainerName?: boolean
+  appUrl?: boolean
+  outputPrefix?: boolean
   errorMessage?: boolean
   errorCode?: boolean
   errorStep?: boolean
@@ -2748,16 +2564,12 @@ export type DeploymentSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ex
   commitAuthor?: boolean
   deployedById?: boolean
   url?: boolean
-  ecsTaskArn?: boolean
-  ecsServiceArn?: boolean
-  ecsTaskDefArn?: boolean
-  ecrImageUri?: boolean
-  albTargetGroupArn?: boolean
-  albListenerRuleArn?: boolean
-  lambdaFunctionArn?: boolean
-  lambdaFunctionName?: boolean
-  lambdaFunctionUrl?: boolean
-  s3Prefix?: boolean
+  buildContainerId?: boolean
+  imageUri?: boolean
+  appContainerId?: boolean
+  appContainerName?: boolean
+  appUrl?: boolean
+  outputPrefix?: boolean
   errorMessage?: boolean
   errorCode?: boolean
   errorStep?: boolean
@@ -2795,16 +2607,12 @@ export type DeploymentSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
   commitAuthor?: boolean
   deployedById?: boolean
   url?: boolean
-  ecsTaskArn?: boolean
-  ecsServiceArn?: boolean
-  ecsTaskDefArn?: boolean
-  ecrImageUri?: boolean
-  albTargetGroupArn?: boolean
-  albListenerRuleArn?: boolean
-  lambdaFunctionArn?: boolean
-  lambdaFunctionName?: boolean
-  lambdaFunctionUrl?: boolean
-  s3Prefix?: boolean
+  buildContainerId?: boolean
+  imageUri?: boolean
+  appContainerId?: boolean
+  appContainerName?: boolean
+  appUrl?: boolean
+  outputPrefix?: boolean
   errorMessage?: boolean
   errorCode?: boolean
   errorStep?: boolean
@@ -2842,16 +2650,12 @@ export type DeploymentSelectScalar = {
   commitAuthor?: boolean
   deployedById?: boolean
   url?: boolean
-  ecsTaskArn?: boolean
-  ecsServiceArn?: boolean
-  ecsTaskDefArn?: boolean
-  ecrImageUri?: boolean
-  albTargetGroupArn?: boolean
-  albListenerRuleArn?: boolean
-  lambdaFunctionArn?: boolean
-  lambdaFunctionName?: boolean
-  lambdaFunctionUrl?: boolean
-  s3Prefix?: boolean
+  buildContainerId?: boolean
+  imageUri?: boolean
+  appContainerId?: boolean
+  appContainerName?: boolean
+  appUrl?: boolean
+  outputPrefix?: boolean
   errorMessage?: boolean
   errorCode?: boolean
   errorStep?: boolean
@@ -2872,7 +2676,7 @@ export type DeploymentSelectScalar = {
   updatedAt?: boolean
 }
 
-export type DeploymentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "projectId" | "slug" | "status" | "cancelRequested" | "type" | "framework" | "environment" | "branch" | "commitHash" | "commitMessage" | "commitAuthor" | "deployedById" | "url" | "ecsTaskArn" | "ecsServiceArn" | "ecsTaskDefArn" | "ecrImageUri" | "albTargetGroupArn" | "albListenerRuleArn" | "lambdaFunctionArn" | "lambdaFunctionName" | "lambdaFunctionUrl" | "s3Prefix" | "errorMessage" | "errorCode" | "errorStep" | "buildDurationMs" | "uploadedFileCount" | "imageSizeBytes" | "lastRequestAt" | "sleepCount" | "totalSleepMs" | "triggeredBy" | "webhookDeliveryId" | "queuedAt" | "buildStartedAt" | "buildFinishedAt" | "deployedAt" | "stoppedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["deployment"]>
+export type DeploymentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "projectId" | "slug" | "status" | "cancelRequested" | "type" | "framework" | "environment" | "branch" | "commitHash" | "commitMessage" | "commitAuthor" | "deployedById" | "url" | "buildContainerId" | "imageUri" | "appContainerId" | "appContainerName" | "appUrl" | "outputPrefix" | "errorMessage" | "errorCode" | "errorStep" | "buildDurationMs" | "uploadedFileCount" | "imageSizeBytes" | "lastRequestAt" | "sleepCount" | "totalSleepMs" | "triggeredBy" | "webhookDeliveryId" | "queuedAt" | "buildStartedAt" | "buildFinishedAt" | "deployedAt" | "stoppedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["deployment"]>
 export type DeploymentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
   deployedBy?: boolean | Prisma.Deployment$deployedByArgs<ExtArgs>
@@ -2914,16 +2718,12 @@ export type $DeploymentPayload<ExtArgs extends runtime.Types.Extensions.Internal
     commitAuthor: string | null
     deployedById: string | null
     url: string | null
-    ecsTaskArn: string | null
-    ecsServiceArn: string | null
-    ecsTaskDefArn: string | null
-    ecrImageUri: string | null
-    albTargetGroupArn: string | null
-    albListenerRuleArn: string | null
-    lambdaFunctionArn: string | null
-    lambdaFunctionName: string | null
-    lambdaFunctionUrl: string | null
-    s3Prefix: string | null
+    buildContainerId: string | null
+    imageUri: string | null
+    appContainerId: string | null
+    appContainerName: string | null
+    appUrl: string | null
+    outputPrefix: string | null
     errorMessage: string | null
     errorCode: string | null
     errorStep: string | null
@@ -3384,16 +3184,12 @@ export interface DeploymentFieldRefs {
   readonly commitAuthor: Prisma.FieldRef<"Deployment", 'String'>
   readonly deployedById: Prisma.FieldRef<"Deployment", 'String'>
   readonly url: Prisma.FieldRef<"Deployment", 'String'>
-  readonly ecsTaskArn: Prisma.FieldRef<"Deployment", 'String'>
-  readonly ecsServiceArn: Prisma.FieldRef<"Deployment", 'String'>
-  readonly ecsTaskDefArn: Prisma.FieldRef<"Deployment", 'String'>
-  readonly ecrImageUri: Prisma.FieldRef<"Deployment", 'String'>
-  readonly albTargetGroupArn: Prisma.FieldRef<"Deployment", 'String'>
-  readonly albListenerRuleArn: Prisma.FieldRef<"Deployment", 'String'>
-  readonly lambdaFunctionArn: Prisma.FieldRef<"Deployment", 'String'>
-  readonly lambdaFunctionName: Prisma.FieldRef<"Deployment", 'String'>
-  readonly lambdaFunctionUrl: Prisma.FieldRef<"Deployment", 'String'>
-  readonly s3Prefix: Prisma.FieldRef<"Deployment", 'String'>
+  readonly buildContainerId: Prisma.FieldRef<"Deployment", 'String'>
+  readonly imageUri: Prisma.FieldRef<"Deployment", 'String'>
+  readonly appContainerId: Prisma.FieldRef<"Deployment", 'String'>
+  readonly appContainerName: Prisma.FieldRef<"Deployment", 'String'>
+  readonly appUrl: Prisma.FieldRef<"Deployment", 'String'>
+  readonly outputPrefix: Prisma.FieldRef<"Deployment", 'String'>
   readonly errorMessage: Prisma.FieldRef<"Deployment", 'String'>
   readonly errorCode: Prisma.FieldRef<"Deployment", 'String'>
   readonly errorStep: Prisma.FieldRef<"Deployment", 'String'>

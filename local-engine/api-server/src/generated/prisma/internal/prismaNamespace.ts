@@ -385,9 +385,7 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 
 export const ModelName = {
   User: 'User',
-  VerificationToken: 'VerificationToken',
   UserSession: 'UserSession',
-  GithubInstallation: 'GithubInstallation',
   Project: 'Project',
   Deployment: 'Deployment',
   DeploymentStateTransition: 'DeploymentStateTransition',
@@ -413,7 +411,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "verificationToken" | "userSession" | "githubInstallation" | "project" | "deployment" | "deploymentStateTransition" | "deploymentLog" | "envVariable" | "deploymentEnvSnapshot" | "customDomain" | "webhookDelivery" | "projectMetricInterval" | "auditLog"
+    modelProps: "user" | "userSession" | "project" | "deployment" | "deploymentStateTransition" | "deploymentLog" | "envVariable" | "deploymentEnvSnapshot" | "customDomain" | "webhookDelivery" | "projectMetricInterval" | "auditLog"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -491,80 +489,6 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
-    VerificationToken: {
-      payload: Prisma.$VerificationTokenPayload<ExtArgs>
-      fields: Prisma.VerificationTokenFieldRefs
-      operations: {
-        findUnique: {
-          args: Prisma.VerificationTokenFindUniqueArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$VerificationTokenPayload> | null
-        }
-        findUniqueOrThrow: {
-          args: Prisma.VerificationTokenFindUniqueOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$VerificationTokenPayload>
-        }
-        findFirst: {
-          args: Prisma.VerificationTokenFindFirstArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$VerificationTokenPayload> | null
-        }
-        findFirstOrThrow: {
-          args: Prisma.VerificationTokenFindFirstOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$VerificationTokenPayload>
-        }
-        findMany: {
-          args: Prisma.VerificationTokenFindManyArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$VerificationTokenPayload>[]
-        }
-        create: {
-          args: Prisma.VerificationTokenCreateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$VerificationTokenPayload>
-        }
-        createMany: {
-          args: Prisma.VerificationTokenCreateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        createManyAndReturn: {
-          args: Prisma.VerificationTokenCreateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$VerificationTokenPayload>[]
-        }
-        delete: {
-          args: Prisma.VerificationTokenDeleteArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$VerificationTokenPayload>
-        }
-        update: {
-          args: Prisma.VerificationTokenUpdateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$VerificationTokenPayload>
-        }
-        deleteMany: {
-          args: Prisma.VerificationTokenDeleteManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateMany: {
-          args: Prisma.VerificationTokenUpdateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateManyAndReturn: {
-          args: Prisma.VerificationTokenUpdateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$VerificationTokenPayload>[]
-        }
-        upsert: {
-          args: Prisma.VerificationTokenUpsertArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$VerificationTokenPayload>
-        }
-        aggregate: {
-          args: Prisma.VerificationTokenAggregateArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.AggregateVerificationToken>
-        }
-        groupBy: {
-          args: Prisma.VerificationTokenGroupByArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.VerificationTokenGroupByOutputType>[]
-        }
-        count: {
-          args: Prisma.VerificationTokenCountArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.VerificationTokenCountAggregateOutputType> | number
-        }
-      }
-    }
     UserSession: {
       payload: Prisma.$UserSessionPayload<ExtArgs>
       fields: Prisma.UserSessionFieldRefs
@@ -636,80 +560,6 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.UserSessionCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.UserSessionCountAggregateOutputType> | number
-        }
-      }
-    }
-    GithubInstallation: {
-      payload: Prisma.$GithubInstallationPayload<ExtArgs>
-      fields: Prisma.GithubInstallationFieldRefs
-      operations: {
-        findUnique: {
-          args: Prisma.GithubInstallationFindUniqueArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$GithubInstallationPayload> | null
-        }
-        findUniqueOrThrow: {
-          args: Prisma.GithubInstallationFindUniqueOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$GithubInstallationPayload>
-        }
-        findFirst: {
-          args: Prisma.GithubInstallationFindFirstArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$GithubInstallationPayload> | null
-        }
-        findFirstOrThrow: {
-          args: Prisma.GithubInstallationFindFirstOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$GithubInstallationPayload>
-        }
-        findMany: {
-          args: Prisma.GithubInstallationFindManyArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$GithubInstallationPayload>[]
-        }
-        create: {
-          args: Prisma.GithubInstallationCreateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$GithubInstallationPayload>
-        }
-        createMany: {
-          args: Prisma.GithubInstallationCreateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        createManyAndReturn: {
-          args: Prisma.GithubInstallationCreateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$GithubInstallationPayload>[]
-        }
-        delete: {
-          args: Prisma.GithubInstallationDeleteArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$GithubInstallationPayload>
-        }
-        update: {
-          args: Prisma.GithubInstallationUpdateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$GithubInstallationPayload>
-        }
-        deleteMany: {
-          args: Prisma.GithubInstallationDeleteManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateMany: {
-          args: Prisma.GithubInstallationUpdateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateManyAndReturn: {
-          args: Prisma.GithubInstallationUpdateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$GithubInstallationPayload>[]
-        }
-        upsert: {
-          args: Prisma.GithubInstallationUpsertArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$GithubInstallationPayload>
-        }
-        aggregate: {
-          args: Prisma.GithubInstallationAggregateArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.AggregateGithubInstallation>
-        }
-        groupBy: {
-          args: Prisma.GithubInstallationGroupByArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.GithubInstallationGroupByOutputType>[]
-        }
-        count: {
-          args: Prisma.GithubInstallationCountArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.GithubInstallationCountAggregateOutputType> | number
         }
       }
     }
@@ -1498,11 +1348,8 @@ export const UserScalarFieldEnum = {
   passwordHash: 'passwordHash',
   name: 'name',
   avatarUrl: 'avatarUrl',
-  githubId: 'githubId',
-  githubUsername: 'githubUsername',
-  githubToken: 'githubToken',
+  personalAccessToken: 'personalAccessToken',
   refreshTokenHash: 'refreshTokenHash',
-  emailVerified: 'emailVerified',
   isActive: 'isActive',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
@@ -1510,19 +1357,6 @@ export const UserScalarFieldEnum = {
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
-
-
-export const VerificationTokenScalarFieldEnum = {
-  id: 'id',
-  userId: 'userId',
-  type: 'type',
-  tokenHash: 'tokenHash',
-  expiresAt: 'expiresAt',
-  consumedAt: 'consumedAt',
-  createdAt: 'createdAt'
-} as const
-
-export type VerificationTokenScalarFieldEnum = (typeof VerificationTokenScalarFieldEnum)[keyof typeof VerificationTokenScalarFieldEnum]
 
 
 export const UserSessionScalarFieldEnum = {
@@ -1539,20 +1373,6 @@ export const UserSessionScalarFieldEnum = {
 export type UserSessionScalarFieldEnum = (typeof UserSessionScalarFieldEnum)[keyof typeof UserSessionScalarFieldEnum]
 
 
-export const GithubInstallationScalarFieldEnum = {
-  id: 'id',
-  installationId: 'installationId',
-  accountLogin: 'accountLogin',
-  accountType: 'accountType',
-  userId: 'userId',
-  suspendedAt: 'suspendedAt',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type GithubInstallationScalarFieldEnum = (typeof GithubInstallationScalarFieldEnum)[keyof typeof GithubInstallationScalarFieldEnum]
-
-
 export const ProjectScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -1563,7 +1383,6 @@ export const ProjectScalarFieldEnum = {
   repoFullName: 'repoFullName',
   defaultBranch: 'defaultBranch',
   isPrivate: 'isPrivate',
-  installationId: 'installationId',
   repositoryId: 'repositoryId',
   autoDeployEnabled: 'autoDeployEnabled',
   buildCommand: 'buildCommand',
@@ -1597,16 +1416,12 @@ export const DeploymentScalarFieldEnum = {
   commitAuthor: 'commitAuthor',
   deployedById: 'deployedById',
   url: 'url',
-  ecsTaskArn: 'ecsTaskArn',
-  ecsServiceArn: 'ecsServiceArn',
-  ecsTaskDefArn: 'ecsTaskDefArn',
-  ecrImageUri: 'ecrImageUri',
-  albTargetGroupArn: 'albTargetGroupArn',
-  albListenerRuleArn: 'albListenerRuleArn',
-  lambdaFunctionArn: 'lambdaFunctionArn',
-  lambdaFunctionName: 'lambdaFunctionName',
-  lambdaFunctionUrl: 'lambdaFunctionUrl',
-  s3Prefix: 's3Prefix',
+  buildContainerId: 'buildContainerId',
+  imageUri: 'imageUri',
+  appContainerId: 'appContainerId',
+  appContainerName: 'appContainerName',
+  appUrl: 'appUrl',
+  outputPrefix: 'outputPrefix',
   errorMessage: 'errorMessage',
   errorCode: 'errorCode',
   errorStep: 'errorStep',
@@ -1815,20 +1630,6 @@ export type ListStringFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaMod
 
 
 /**
- * Reference to a field of type 'Int'
- */
-export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
-    
-
-
-/**
- * Reference to a field of type 'Int[]'
- */
-export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
-    
-
-
-/**
  * Reference to a field of type 'Boolean'
  */
 export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
@@ -1850,16 +1651,16 @@ export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaM
 
 
 /**
- * Reference to a field of type 'VerificationTokenType'
+ * Reference to a field of type 'Int'
  */
-export type EnumVerificationTokenTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'VerificationTokenType'>
+export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
     
 
 
 /**
- * Reference to a field of type 'VerificationTokenType[]'
+ * Reference to a field of type 'Int[]'
  */
-export type ListEnumVerificationTokenTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'VerificationTokenType[]'>
+export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
     
 
 
@@ -2099,9 +1900,7 @@ export type PrismaClientOptions = ({
 }
 export type GlobalOmitConfig = {
   user?: Prisma.UserOmit
-  verificationToken?: Prisma.VerificationTokenOmit
   userSession?: Prisma.UserSessionOmit
-  githubInstallation?: Prisma.GithubInstallationOmit
   project?: Prisma.ProjectOmit
   deployment?: Prisma.DeploymentOmit
   deploymentStateTransition?: Prisma.DeploymentStateTransitionOmit

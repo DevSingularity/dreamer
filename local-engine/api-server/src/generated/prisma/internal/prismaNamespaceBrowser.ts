@@ -52,9 +52,7 @@ export const AnyNull = runtime.AnyNull
 
 export const ModelName = {
   User: 'User',
-  VerificationToken: 'VerificationToken',
   UserSession: 'UserSession',
-  GithubInstallation: 'GithubInstallation',
   Project: 'Project',
   Deployment: 'Deployment',
   DeploymentStateTransition: 'DeploymentStateTransition',
@@ -89,11 +87,8 @@ export const UserScalarFieldEnum = {
   passwordHash: 'passwordHash',
   name: 'name',
   avatarUrl: 'avatarUrl',
-  githubId: 'githubId',
-  githubUsername: 'githubUsername',
-  githubToken: 'githubToken',
+  personalAccessToken: 'personalAccessToken',
   refreshTokenHash: 'refreshTokenHash',
-  emailVerified: 'emailVerified',
   isActive: 'isActive',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
@@ -101,19 +96,6 @@ export const UserScalarFieldEnum = {
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
-
-
-export const VerificationTokenScalarFieldEnum = {
-  id: 'id',
-  userId: 'userId',
-  type: 'type',
-  tokenHash: 'tokenHash',
-  expiresAt: 'expiresAt',
-  consumedAt: 'consumedAt',
-  createdAt: 'createdAt'
-} as const
-
-export type VerificationTokenScalarFieldEnum = (typeof VerificationTokenScalarFieldEnum)[keyof typeof VerificationTokenScalarFieldEnum]
 
 
 export const UserSessionScalarFieldEnum = {
@@ -130,20 +112,6 @@ export const UserSessionScalarFieldEnum = {
 export type UserSessionScalarFieldEnum = (typeof UserSessionScalarFieldEnum)[keyof typeof UserSessionScalarFieldEnum]
 
 
-export const GithubInstallationScalarFieldEnum = {
-  id: 'id',
-  installationId: 'installationId',
-  accountLogin: 'accountLogin',
-  accountType: 'accountType',
-  userId: 'userId',
-  suspendedAt: 'suspendedAt',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type GithubInstallationScalarFieldEnum = (typeof GithubInstallationScalarFieldEnum)[keyof typeof GithubInstallationScalarFieldEnum]
-
-
 export const ProjectScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -154,7 +122,6 @@ export const ProjectScalarFieldEnum = {
   repoFullName: 'repoFullName',
   defaultBranch: 'defaultBranch',
   isPrivate: 'isPrivate',
-  installationId: 'installationId',
   repositoryId: 'repositoryId',
   autoDeployEnabled: 'autoDeployEnabled',
   buildCommand: 'buildCommand',
@@ -188,16 +155,12 @@ export const DeploymentScalarFieldEnum = {
   commitAuthor: 'commitAuthor',
   deployedById: 'deployedById',
   url: 'url',
-  ecsTaskArn: 'ecsTaskArn',
-  ecsServiceArn: 'ecsServiceArn',
-  ecsTaskDefArn: 'ecsTaskDefArn',
-  ecrImageUri: 'ecrImageUri',
-  albTargetGroupArn: 'albTargetGroupArn',
-  albListenerRuleArn: 'albListenerRuleArn',
-  lambdaFunctionArn: 'lambdaFunctionArn',
-  lambdaFunctionName: 'lambdaFunctionName',
-  lambdaFunctionUrl: 'lambdaFunctionUrl',
-  s3Prefix: 's3Prefix',
+  buildContainerId: 'buildContainerId',
+  imageUri: 'imageUri',
+  appContainerId: 'appContainerId',
+  appContainerName: 'appContainerName',
+  appUrl: 'appUrl',
+  outputPrefix: 'outputPrefix',
   errorMessage: 'errorMessage',
   errorCode: 'errorCode',
   errorStep: 'errorStep',
