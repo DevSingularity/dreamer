@@ -79,13 +79,13 @@ source "${SCRIPT_DIR}/scripts/lib/install-docker.sh"
 log_step "Generating secrets and .env files"
 POSTGRES_PASSWORD="$(random_hex 24)"
 MINIO_ROOT_PASSWORD="$(random_hex 24)"
-bash "${SCRIPT_DIR}/scripts/lib/generate-env.sh" "${DOMAIN}" "${POSTGRES_PASSWORD}" "${MINIO_ROOT_PASSWORD}"
+bash "${SCRIPT_DIR}/generate-env.sh" "${DOMAIN}" "${POSTGRES_PASSWORD}" "${MINIO_ROOT_PASSWORD}"
 
 # --- 3. TLS certificate (BEFORE bringing nginx up — same reasoning as the
 # repo root's own install.sh: nginx's config already references cert
 # files unconditionally and fails to start without them) -----------------
 log_step "Obtaining wildcard-only TLS certificate for *.${DOMAIN}"
-bash "${SCRIPT_DIR}/scripts/lib/issue-certificate.sh" "${DOMAIN}" "${EMAIL}" "${CLOUDFLARE_TOKEN}"
+bash "${SCRIPT_DIR}/issue-certificate.sh" "${DOMAIN}" "${EMAIL}" "${CLOUDFLARE_TOKEN}"
 
 # --- 4. Build the build-engine image --------------------------------------
 # NOT a compose service (see docker-compose.yml's own comment) —
@@ -94,11 +94,10 @@ bash "${SCRIPT_DIR}/scripts/lib/issue-certificate.sh" "${DOMAIN}" "${EMAIL}" "${
 # the first deploy is attempted, so build it here rather than leaving it
 # as a manual step someone forgets.
 log_step "Building the build-engine image"
-docker build -t dreamer-build-engine:local "${SCRIPT_DIR}/build-engine"
+docker build -t dreamer-build-engine:local "build-engine"
 
 # --- 5. Build + start the stack -------------------------------------------
 log_step "Building and starting the stack (this can take a few minutes on first run)"
-cd "${SCRIPT_DIR}"
 docker compose --env-file .env.deploy up -d --build
 
 # --- 6. Database migrations ------------------------------------------------
